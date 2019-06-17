@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_margin="4dp"
+    android:background="@drawable/dialog_shape"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/edit_text_search_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="Custom Floating Label Text"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:shadowColor="@color/colorAccent"
+        app:met_errorColor="@color/colorPrimaryDark"
+        app:met_floatingLabel="normal"
+        app:met_floatingLabelText="Custom Floating Label Text"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_search_cities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_text_search_city"
+        android:minHeight="300dp"/>
+
+    <Button
+        android:id="@+id/button_add_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/PrimaryColoredButton"
+        android:gravity="center"
+        android:text="Добавить"/>
+
+</LinearLayout>
