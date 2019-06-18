@@ -9,9 +9,12 @@ import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.vadimfedchuk1994gmail.weather.tools.ConnectionChangeReceiver;
-import com.vadimfedchuk1994gmail.weather.activity.main.MainActivity;
 import com.vadimfedchuk1994gmail.weather.R;
+import com.vadimfedchuk1994gmail.weather.WeatherApp;
+import com.vadimfedchuk1994gmail.weather.activity.main.MainActivity;
+import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
+import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
+import com.vadimfedchuk1994gmail.weather.tools.ConnectionChangeReceiver;
 import com.vadimfedchuk1994gmail.weather.tools.WeatherPreferences;
 import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
@@ -57,7 +60,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void init() {
-        SplashModel model = new SplashModel();
+        AppDatabase database = WeatherApp.getInstance().getDatabase();
+        WeatherDataSource source = new WeatherDataSource(this);
+        SplashModel model = new SplashModel(source, database);
         presenter = new SplashPresenter(model);
         presenter.attachView(this);
         presenter.viewIsReady();

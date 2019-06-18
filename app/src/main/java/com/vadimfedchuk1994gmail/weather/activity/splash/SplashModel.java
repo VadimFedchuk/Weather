@@ -1,52 +1,115 @@
 package com.vadimfedchuk1994gmail.weather.activity.splash;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.vadimfedchuk1994gmail.weather.Weather;
-import com.vadimfedchuk1994gmail.weather.WorkManager.DownloadWorkManager;
-import com.vadimfedchuk1994gmail.weather.WorkManager.SaveDataWorkManager;
+import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
+import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
+import com.vadimfedchuk1994gmail.weather.network.weather_response.Datum;
+import com.vadimfedchuk1994gmail.weather.network.weather_response.WeatherResponse;
+import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
+import java.util.List;
+
+import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class SplashModel {
 
-    public void loadSaveData(String locality, String countryCode, Context context, OnCompleteCallback callback) {
-        if(!locality.isEmpty() && !countryCode.isEmpty()) {
-            Data data = new Data.Builder()
-                    .putString("locality", locality)
-                    .putString("countryCode", countryCode)
-                    .build();
-            OneTimeWorkRequest requestDownload = new
-                    OneTimeWorkRequest.Builder(DownloadWorkManager.class).setInputData(data).build();
-            OneTimeWorkRequest requestSaveData = new
-                    OneTimeWorkRequest.Builder(SaveDataWorkManager.class).build();
+    CompositeDisposable disposables;
+    private WeatherDataSource mWeatherDataSource;
+    private OnCompleteCallback callback;
+    private AppDatabase mAppDatabase;
+    private int countFlag = 0;
+    private int countCities = 1;
 
-            WorkManager workManager = WorkManager.getInstance();
-            workManager.beginWith(requestDownload).then(requestSaveData).enqueue();
-            LiveData<WorkInfo> status = workManager.getWorkInfoByIdLiveData(requestSaveData.getId());
-            status.observe((LifecycleOwner)context, new Observer<WorkInfo>() {
-                @Override
-                public void onChanged(WorkInfo workInfo) {
-                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        Log.i("TESTTEST", "success");
-                        callback.onComplete();
+    public SplashModel(WeatherDataSource weatherDataSource, AppDatabase database) {
+        disposables = new CompositeDisposable();
+        mWeatherDataSource = weatherDataSource;
+        this.mAppDatabase = database;
+    }
+
+    public void loadData(String city) {
+        mWeatherDataSource.getWeatherData(city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<WeatherResponse>() {
+                    @Override
+                    public void onSuccess(WeatherResponse weatherResponse) {
+                        Log.i("TESTTEST", weatherResponse.getData().size() + " weatherResponses.size()");
+                        ++countFlag;
+                        saveData(weatherResponse.getData(), weatherResponse.getCityName());
                     }
-                }
-            });
 
-        } else {
-            callback.onComplete();
-        }
+                    @Override
+                    public void onError(Throwable e) {
+                        ++countFlag;
+                        Log.i("TESTTEST", "error" + e.getMessage() + " " + e.toString());
+                        if (countCities == countFlag) {
+                            callback.onComplete(true);
+                        }
+                    }
+                });
+    }
+
+    private void saveData(List<Datum> weatherResponses, String city) {
+        List<Weather> data = Weather.cloneList(weatherResponses, city);
+        Log.i("TESTTEST", " save " + data.size());
+        mAppDatabase.getWeatherDao().insert(data)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if (countCities == countFlag) {
+                            callback.onComplete(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("TESTTEST", " error insert " + e.getMessage());
+                        if (countCities == countFlag) {
+                            callback.onComplete(true);
+                        }
+                    }
+                });
+    }
+
+    public void updateData() {
+        mAppDatabase.getWeatherDao().getCities()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<List<String>>() {
+                    @Override
+                    public void onSuccess(List<String> strings) {
+                        Log.i("TESTTEST", strings.toString());
+                        countCities = strings.size();
+                        for (String city : strings) {
+                            loadData(city);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("TESTTEST", " error read " + e.getMessage());
+                        callback.onComplete(false);
+                    }
+                });
+    }
+
+    public void setOnCompleteCallback(OnCompleteCallback callback) {
+        this.callback = callback;
     }
 
     interface OnCompleteCallback {
-        void onComplete();
+        void onComplete(boolean isUpdatedSuccessfully);
     }
 }

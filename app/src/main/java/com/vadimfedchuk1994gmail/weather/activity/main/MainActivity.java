@@ -4,14 +4,14 @@ package com.vadimfedchuk1994gmail.weather.activity.main;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.vadimfedchuk1994gmail.weather.activity.base.BaseActivity;
 import com.vadimfedchuk1994gmail.weather.R;
 import com.vadimfedchuk1994gmail.weather.SearchCityDialogFragment;
+import com.vadimfedchuk1994gmail.weather.activity.base.BaseActivity;
 import com.vadimfedchuk1994gmail.weather.adapters.MainAdapter;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class MainActivity extends BaseActivity implements SearchCityDialogFragment.AddCityDialogListener {
+public class MainActivity extends BaseActivity implements SearchCityDialogFragment.AddCityDialogListener, MainAdapter.ClickListener {
 
     private RecyclerView mRecyclerView;
     private MainAdapter mAdapter;
@@ -89,13 +89,15 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
         });
     }
 
-    private void showDialogFragment() {
+    @Override
+    public void showDialogFragment() {
         FragmentManager fm = getSupportFragmentManager();
         SearchCityDialogFragment searchCityDialogFragment = SearchCityDialogFragment.newInstance("Some Title");
         searchCityDialogFragment.show(fm, "fragment_edit_name");
 
     }
 
+    @Override
     public void showData() {
 
     }
@@ -117,6 +119,18 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
 
     @Override
     public void hideProgressBar() {
+
+    }
+
+    // from adapter
+    @Override
+    public void onClick(View view, int position) {
+
+    }
+
+    // from adapter
+    @Override
+    public void onLongClick(View view, int position) {
 
     }
 

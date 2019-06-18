@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.view.View;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -22,13 +20,15 @@ import java.util.Locale;
 
 import androidx.core.app.ActivityCompat;
 
-public class SplashPresenter {
+public class SplashPresenter implements SplashModel.OnCompleteCallback {
 
     private SplashModel model;
     private SplashActivity mActivity;
     private Context mContext;
+
     public SplashPresenter(SplashModel model) {
         this.model = model;
+        model.setOnCompleteCallback(this);
     }
 
     public void attachView(SplashActivity activity) {
@@ -43,12 +43,14 @@ public class SplashPresenter {
     public void viewIsReady() {
         mActivity.showProgressBar();
         if (WeatherPreferences.isFirstStart(mContext) && WeatherPreferences.getStoredConnectionChanged(mContext)) {
+            Log.i("TESTTEST", "1");
             WeatherPreferences.setStoredStart(mContext, false);
             checkCurrentLocation();
         } else if (WeatherPreferences.getStoredConnectionChanged(mContext)) {
-            // читать города с базы
-            downloadData("123", "456");
+            Log.i("TESTTEST", "2");
+            model.updateData();
         } else {
+            Log.i("TESTTEST", "3");
             mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);
         }
     }
@@ -75,7 +77,7 @@ public class SplashPresenter {
                 }
 
                 if (addresses.size() != 0) {
-                    downloadData(addresses.get(0).getLocality(), addresses.get(0).getCountryCode());
+                    downloadData(addresses.get(0).getLocality());
                 }
             });
         } else {
@@ -83,13 +85,24 @@ public class SplashPresenter {
         }
     }
 
-    private void downloadData(String locality, String countryCode) {
-        model.loadSaveData(locality, countryCode, mActivity, new SplashModel.OnCompleteCallback() {
-            @Override
-            public void onComplete() {
-                mActivity.startActivity(MainActivity.TypeStart.UPDATE);
-            }
-        });
+    private void downloadData(String locality) {
+//        model.loadSaveData(locality, countryCode, mActivity, new SplashModel.OnCompleteCallback() {
+//            @Override
+//            public void onComplete() {
+//                mActivity.startActivity(MainActivity.TypeStart.UPDATE);
+//            }
+//        });
+        Log.i("TESTTEST", locality);
+        model.loadData(locality);
+    }
+
+    @Override
+    public void onComplete(boolean isUpdatedSuccessfully) {
+        if (isUpdatedSuccessfully) {
+            mActivity.startActivity(MainActivity.TypeStart.UPDATE);
+        } else {
+            mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);
+        }
     }
 }
 

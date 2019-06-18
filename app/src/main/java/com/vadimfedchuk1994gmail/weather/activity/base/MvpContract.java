@@ -4,11 +4,21 @@ public interface MvpContract {
 
     interface View {
         void init();
+
+        void initBars();
         void showProgressBar();
         void hideProgressBar();
+
+        void showDialogFragment();
+
+        void showData();
     }
 
     interface Presenter {
+        void viewIsReady();
 
+        void attachView();
+
+        void detachView();
     }
 }

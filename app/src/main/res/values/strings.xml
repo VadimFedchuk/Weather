@@ -5,5 +5,7 @@
     <string name="max_temperature">max \n%1$d\u00B0</string>
     <string name="min_temperature">min \n%1$d\u00B0</string>
     <string name="wind_speed">%1$s %2$d м\с</string>
+    <string name="base_url_upload_data_weather">https://api.weatherbit.io/v2.0/</string>
+    <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/</string>
 
 </resources>

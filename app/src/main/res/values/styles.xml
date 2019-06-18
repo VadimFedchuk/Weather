@@ -35,7 +35,7 @@
         <item name="buttonGravity">bottom</item>
     </style>
 
-    <style name="textView_style_1">
+    <style name="textView_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@android:color/holo_blue_dark</item>
@@ -44,10 +44,7 @@
         <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
-    <style name="textView_style_2" parent="textView_style_1">
-        <item name="android:textColor">@android:color/holo_blue_light</item>
-        <item name="android:textStyle">normal</item>
-    </style>
+
     <style name="PrimaryColoredButton" parent="Base.Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="colorControlHighlight">@color/colorAccent</item>

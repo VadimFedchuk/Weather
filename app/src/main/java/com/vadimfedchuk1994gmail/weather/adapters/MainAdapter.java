@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.vadimfedchuk1994gmail.weather.R;
 
@@ -24,6 +22,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private Context mContext;
     private List<String> mDataSet;
+    private ClickListener clicklistener;
 
     public MainAdapter(Context context, List<String> dataSet) {
         mContext = context;
@@ -48,7 +47,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         return mDataSet.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public interface ClickListener {
+        void onClick(View view, int position);
+
+        void onLongClick(View view, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.card_view_main) CardView mCardView;
         @BindView(R.id.cityCountryName) TextView mNameTextView;
@@ -62,7 +67,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCardView.setOnClickListener(this);
+            mCardView.setOnClickListener(v -> clicklistener.onClick(v, getAdapterPosition()));
+            mCardView.setOnLongClickListener(v -> {
+                clicklistener.onLongClick(v, getAdapterPosition());
+                return true;
+            });
         }
 
         private void bind(String city, Context mContext) {
@@ -77,11 +86,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             mTempMaxTextView.setText(mContext.getResources().getString(R.string.max_temperature, 30));
             mTempMinTextView.setText(mContext.getResources().getString(R.string.max_temperature, 30));
             mWindTextView.setText(mContext.getResources().getString(R.string.wind_speed, "ВЮВ", 1000));
-        }
 
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(mContext, "Click", Toast.LENGTH_SHORT).show();
+            mCardView.setOnClickListener(v -> clicklistener.onClick(v, getAdapterPosition()));
+            mCardView.setOnLongClickListener(v -> {
+                clicklistener.onLongClick(v, getAdapterPosition());
+                return true;
+            });
         }
     }
 

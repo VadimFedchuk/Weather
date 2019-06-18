@@ -22,7 +22,7 @@
 
         <TextView
             android:id="@+id/cityCountryName"
-            style="@style/textView_style_1"
+            style="@style/textView_style"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             card_view:layout_constraintLeft_toLeftOf="parent"
             card_view:layout_constraintRight_toRightOf="parent"
@@ -47,7 +47,7 @@
 
         <TextView
             android:id="@+id/description_weather"
-            style="@style/textView_style_1"
+            style="@style/textView_style"
             android:layout_margin="4dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             card_view:layout_constraintRight_toRightOf="parent"
@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/current_temperature"
-            style="@style/textView_style_1"
+            style="@style/textView_style"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
@@ -73,7 +73,7 @@
 
         <TextView
             android:id="@+id/max_temperature"
-            style="@style/textView_style_2"
+            style="@style/textView_style"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="8dp"
@@ -83,7 +83,7 @@
 
         <TextView
             android:id="@+id/min_temperature"
-            style="@style/textView_style_2"
+            style="@style/textView_style"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
@@ -97,7 +97,7 @@
 
         <TextView
             android:id="@+id/wind_speed_destination"
-            style="@style/textView_style_2"
+            style="@style/textView_style"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="8dp"
             card_view:layout_constraintBottom_toTopOf="@+id/description_weather"
