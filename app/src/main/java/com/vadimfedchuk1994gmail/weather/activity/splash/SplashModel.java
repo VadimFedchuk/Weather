@@ -24,7 +24,7 @@ public class SplashModel {
     private OnCompleteCallback callback;
     private AppDatabase mAppDatabase;
     private int countFlag = 0;
-    private int countCities = 1;
+    private int countCitiesForUpdate = 1;
 
     public SplashModel(WeatherDataSource weatherDataSource, AppDatabase database) {
         disposables = new CompositeDisposable();
@@ -48,7 +48,7 @@ public class SplashModel {
                     public void onError(Throwable e) {
                         ++countFlag;
                         Log.i("TESTTEST", "error" + e.getMessage() + " " + e.toString());
-                        if (countCities == countFlag) {
+                        if (countCitiesForUpdate == countFlag) {
                             callback.onComplete(true);
                         }
                     }
@@ -68,7 +68,8 @@ public class SplashModel {
 
                     @Override
                     public void onComplete() {
-                        if (countCities == countFlag) {
+                        Log.i("TESTTEST", "onComplete " + countCitiesForUpdate + " " + countFlag);
+                        if (countCitiesForUpdate == countFlag) {
                             callback.onComplete(true);
                         }
                     }
@@ -76,7 +77,7 @@ public class SplashModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.i("TESTTEST", " error insert " + e.getMessage());
-                        if (countCities == countFlag) {
+                        if (countCitiesForUpdate == countFlag) {
                             callback.onComplete(true);
                         }
                     }
@@ -91,7 +92,7 @@ public class SplashModel {
                     @Override
                     public void onSuccess(List<String> strings) {
                         Log.i("TESTTEST", strings.toString());
-                        countCities = strings.size();
+                        countCitiesForUpdate = strings.size();
                         for (String city : strings) {
                             loadData(city);
                         }

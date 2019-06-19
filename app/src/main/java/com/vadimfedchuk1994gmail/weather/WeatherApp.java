@@ -24,17 +24,11 @@ public class WeatherApp extends Application {
         return context;
     }
 
-//    private void initDb() {
-//        mDatabase = Room.databaseBuilder(this, AppDatabase.class, "database_weather")
-//                .build();
-//    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
         instance = this;
-        //initDb();
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) instance.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo WiFiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);

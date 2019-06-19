@@ -53,6 +53,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         void onLongClick(View view, int position);
     }
 
+    public void setClickListener(ClickListener listener) {
+        this.clicklistener = listener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.card_view_main) CardView mCardView;
@@ -67,11 +71,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            mCardView.setOnClickListener(v -> clicklistener.onClick(v, getAdapterPosition()));
-            mCardView.setOnLongClickListener(v -> {
-                clicklistener.onLongClick(v, getAdapterPosition());
-                return true;
-            });
+
         }
 
         private void bind(String city, Context mContext) {

@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
         );
 
         mAdapter = new MainAdapter(this, trees);
+        mAdapter.setClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
 
     }

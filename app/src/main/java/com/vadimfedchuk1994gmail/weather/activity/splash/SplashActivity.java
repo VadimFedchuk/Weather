@@ -95,7 +95,7 @@ public class SplashActivity extends AppCompatActivity {
 
     public void startActivity(MainActivity.TypeStart type) {
         hideProgressBar();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class).putExtra("type", type));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class).putExtra("type", type).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         Animatoo.animateCard(this);
         finish();
     }
