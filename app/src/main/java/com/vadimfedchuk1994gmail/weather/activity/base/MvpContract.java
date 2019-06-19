@@ -11,7 +11,6 @@ public interface MvpContract {
 
         void showDialogFragment();
 
-        void showData();
     }
 
     interface Presenter {

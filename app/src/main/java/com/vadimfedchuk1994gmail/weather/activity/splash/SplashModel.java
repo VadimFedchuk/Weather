@@ -12,14 +12,13 @@ import java.util.List;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class SplashModel {
 
-    CompositeDisposable disposables;
+
     private WeatherDataSource mWeatherDataSource;
     private OnCompleteCallback callback;
     private AppDatabase mAppDatabase;
@@ -27,7 +26,6 @@ public class SplashModel {
     private int countCitiesForUpdate = 1;
 
     public SplashModel(WeatherDataSource weatherDataSource, AppDatabase database) {
-        disposables = new CompositeDisposable();
         mWeatherDataSource = weatherDataSource;
         this.mAppDatabase = database;
     }
@@ -49,6 +47,9 @@ public class SplashModel {
                         ++countFlag;
                         Log.i("TESTTEST", "error" + e.getMessage() + " " + e.toString());
                         if (countCitiesForUpdate == countFlag) {
+                            if (mAppDatabase != null) {
+                                mAppDatabase.close();
+                            }
                             callback.onComplete(true);
                         }
                     }
@@ -78,6 +79,7 @@ public class SplashModel {
                     public void onError(Throwable e) {
                         Log.i("TESTTEST", " error insert " + e.getMessage());
                         if (countCitiesForUpdate == countFlag) {
+
                             callback.onComplete(true);
                         }
                     }

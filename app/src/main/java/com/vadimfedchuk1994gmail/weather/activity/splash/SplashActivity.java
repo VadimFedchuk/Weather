@@ -105,6 +105,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterNetworkChanges();
         presenter.detachView();
+
     }
 
     protected void unregisterNetworkChanges() {

@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:hint="@string/input_name_city"
+        android:hint="@string/input_city_name"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:maxLines="1"

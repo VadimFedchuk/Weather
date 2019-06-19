@@ -57,6 +57,7 @@ dependencies {
     implementation 'com.github.mohammadatif:Animatoo:master'
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.tapadoo.android:alerter:4.0.2'
     implementation 'androidx.room:room-runtime:2.1.0'
     annotationProcessor 'androidx.room:room-compiler:2.1.0'
     implementation 'androidx.room:room-rxjava2:2.1.0'

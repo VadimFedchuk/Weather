@@ -10,7 +10,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Dao
@@ -23,7 +22,7 @@ public interface WeatherDao {
     Single<Weather> getDataByName(String name);
 
     @Query("SELECT * FROM Weather")
-    Flowable<List<Weather>> getAllData();
+    Single<List<Weather>> getAllData();
 
     @Query("SELECT name FROM Weather")
     Single<List<String>> getCities();

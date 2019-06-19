@@ -4,16 +4,20 @@ package com.vadimfedchuk1994gmail.weather.activity.main;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.tapadoo.alerter.Alerter;
 import com.vadimfedchuk1994gmail.weather.R;
 import com.vadimfedchuk1994gmail.weather.SearchCityDialogFragment;
+import com.vadimfedchuk1994gmail.weather.WeatherApp;
 import com.vadimfedchuk1994gmail.weather.activity.base.BaseActivity;
 import com.vadimfedchuk1994gmail.weather.adapters.MainAdapter;
+import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
+import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
+import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.widget.Toolbar;
@@ -32,45 +36,35 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
     private MainPresenter presenter;
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton myFab;
-
+    AppDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TypeStart type = (TypeStart) getIntent().getSerializableExtra("type");
+        showAlertDialog(type);
         initBars();
+        init();
         setTitle("");
-        MainModel model = new MainModel();
-        presenter = new MainPresenter(model);
-        presenter.attachView(this);
-        presenter.viewIsReady();
-        mRecyclerView = findViewById(R.id.recyclerView);
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            layout = new GridLayoutManager(this, 2);
-        } else {
-            layout = new LinearLayoutManager(this);
+    }
+
+    private void showAlertDialog(TypeStart type) {
+        Alerter alerter = Alerter.create(this);
+        alerter.setDuration(2000);
+        alerter.setEnterAnimation(R.anim.alerter_slide_in_from_left);
+        alerter.setExitAnimation(R.anim.alerter_slide_out_to_right);
+        alerter.enableSwipeToDismiss();
+        if (type == TypeStart.UPDATE) {
+            alerter.setText("Погода успешно обновлена");
+            alerter.setBackgroundColorRes(R.color.colorSuccessfullyUpdate);
+            alerter.setIcon(R.drawable.ic_success_upload);
+        } else if (type == TypeStart.NO_UPDATE) {
+            alerter.setText("Погода не обновлена");
+            alerter.setBackgroundColorRes(R.color.colorFailureUpdate);
+            alerter.setIcon(R.drawable.ic_fail_upload);
         }
-        mRecyclerView.setLayoutManager(layout);
-        // Initialize a new List of Trees
-        List<String> trees = Arrays.asList(
-                "Alder",
-                "Basswood",
-                "Birch",
-                "Buckeye",
-                "Buckthorn",
-                "Catalpa",
-                "Cedar",
-                "Chestnut",
-                "Cypress",
-                "Giant Sequoia",
-                "Honeylocust"
-        );
-
-        mAdapter = new MainAdapter(this, trees);
-        mAdapter.setClickListener(this);
-        mRecyclerView.setAdapter(mAdapter);
-
+        alerter.show();
     }
 
     @Override
@@ -98,9 +92,9 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
 
     }
 
-    @Override
-    public void showData() {
 
+    public void showData(List<Weather> data) {
+        mAdapter.setList(data);
     }
 
     @Override
@@ -110,7 +104,24 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
 
     @Override
     public void init() {
+        mRecyclerView = findViewById(R.id.recyclerView);
 
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layout = new GridLayoutManager(this, 2);
+        } else {
+            layout = new LinearLayoutManager(this);
+        }
+        mRecyclerView.setLayoutManager(layout);
+
+        mAdapter = new MainAdapter(this, new ArrayList<>());
+        mAdapter.setClickListener(this);
+        mRecyclerView.setAdapter(mAdapter);
+        database = WeatherApp.getInstance().getDatabase();
+        WeatherDataSource source = new WeatherDataSource(this);
+        MainModel model = new MainModel(database, source);
+        presenter = new MainPresenter(model);
+        presenter.attachView(this);
+        presenter.viewIsReady();
     }
 
     @Override
@@ -125,14 +136,21 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
 
     // from adapter
     @Override
-    public void onClick(View view, int position) {
+    public void onClick(String name) {
 
     }
 
     // from adapter
     @Override
-    public void onLongClick(View view, int position) {
+    public void onLongClick(Weather data) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        database.close();
+        presenter.detachView();
     }
 
     public static enum TypeStart {
