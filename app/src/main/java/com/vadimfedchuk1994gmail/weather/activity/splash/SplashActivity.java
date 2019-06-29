@@ -1,9 +1,13 @@
 package com.vadimfedchuk1994gmail.weather.activity.splash;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,7 +24,9 @@ import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -28,11 +34,24 @@ public class SplashActivity extends AppCompatActivity {
     private SplashPresenter presenter;
     GoogleApiClient mClient;
     ConnectionChangeReceiver mConnectionChangeReceiver;
+    public static int REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_FINE_LOCATION);
+            }
+        } else {
+            init();
+        }
         mConnectionChangeReceiver = new ConnectionChangeReceiver();
         registerReceiver(mConnectionChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         setCurrentLanguage();
@@ -44,7 +63,20 @@ public class SplashActivity extends AppCompatActivity {
             request.setNumUpdates(1);
             request.setInterval(0);
         }
-        init();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_ACCESS_FINE_LOCATION) {
+            Log.i("TESTTEST", "result " + " 1");
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("TESTTEST", "result " + " 2");
+                init();
+            } else {
+                Log.i("TESTTEST", "result " + " 3");
+                startActivity(MainActivity.TypeStart.NO_UPDATE);
+            }
+        }
     }
 
     private void setCurrentLanguage() {
@@ -95,7 +127,9 @@ public class SplashActivity extends AppCompatActivity {
 
     public void startActivity(MainActivity.TypeStart type) {
         hideProgressBar();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class).putExtra("type", type).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class)
+                .putExtra("type", type)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         Animatoo.animateCard(this);
         finish();
     }
@@ -104,8 +138,9 @@ public class SplashActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterNetworkChanges();
-        presenter.detachView();
-
+        if (presenter != null) {
+            presenter.detachView();
+        }
     }
 
     protected void unregisterNetworkChanges() {

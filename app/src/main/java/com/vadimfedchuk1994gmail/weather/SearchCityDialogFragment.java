@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.vadimfedchuk1994gmail.weather.activity.main.OnEditTextChangedListener;
 import com.vadimfedchuk1994gmail.weather.adapters.DialogFragmentAdapter;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -26,11 +29,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchCityDialogFragment extends DialogFragment implements DialogFragmentAdapter.SingleDialogClickListener {
+public class SearchCityDialogFragment extends DialogFragment
+        implements DialogFragmentAdapter.SingleDialogClickListener,
+        OnEditTextChangedListener.OnCompleteLoad {
 
     @BindView(R.id.edit_text_search_city) MaterialEditText searchEditText;
     @BindView(R.id.recycler_view_search_cities) RecyclerView recyclerViewListCities;
     private DialogFragmentAdapter adapter;
+    OnEditTextChangedListener mListener;
+    private List<String> cities = new ArrayList<>();
+    private int selectedItem = 0;
 
     public static SearchCityDialogFragment newInstance(String title) {
         SearchCityDialogFragment frag = new SearchCityDialogFragment();
@@ -53,6 +61,14 @@ public class SearchCityDialogFragment extends DialogFragment implements DialogFr
 //        window.setGravity(Gravity.CENTER);
 //        // Call super onResume after sizing
         super.onResume();
+    }
+
+    @Override
+    public void onCompleteLoad(String q) {
+
+        //cities.clear();
+        cities.add(q);
+        adapter.setList(cities);
     }
 
     public interface AddCityDialogListener {
@@ -80,30 +96,42 @@ public class SearchCityDialogFragment extends DialogFragment implements DialogFr
         AddCityDialogListener listener = (AddCityDialogListener) getActivity();
         RecyclerView.LayoutManager layout  = new LinearLayoutManager(getActivity());
         recyclerViewListCities.setLayoutManager(layout);
-        List<String> trees = Arrays.asList(
-                "Alder",
-                "Basswood",
-                "Birch",
-                "Buckeye",
-                "Buckthorn",
-                "Catalpa",
-                "Cedar",
-                "Chestnut",
-                "Cypress",
-                "Giant Sequoia",
-                "Honeylocust"
-        );
-        adapter = new DialogFragmentAdapter(getActivity(), trees);
+
+        adapter = new DialogFragmentAdapter(getActivity(), new ArrayList<>());
         adapter.setOnItemClickListener(this);
         recyclerViewListCities.setAdapter(adapter);
         Button buttonAdd = view.findViewById(R.id.button_add_city);
         buttonAdd.setOnClickListener(v ->{
-            listener.onCompleteAddCity("Kharkov");
+            if (cities.isEmpty()) {
+                listener.onCompleteAddCity("");
+            } else {
+                listener.onCompleteAddCity(cities.get(selectedItem));
+            }
             dismiss();
         });
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 3) {
+                    mListener.onEditTextChanged(s.toString(), (SearchCityDialogFragment.this::onCompleteLoad));
+                }
+            }
+        });
     }
+
     @Override
     public void onItemClickListener(int position, View view) {
+        selectedItem = position;
         hideKeyboard(view);
         adapter.selectedItem();
     }
@@ -111,5 +139,9 @@ public class SearchCityDialogFragment extends DialogFragment implements DialogFr
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void setOnEditTextChangedListener(OnEditTextChangedListener listener) {
+        mListener = listener;
     }
 }

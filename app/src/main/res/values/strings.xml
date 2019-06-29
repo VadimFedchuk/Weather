@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Weather</string>
-    <string name="current_temperature">%1$d\u00B0</string>
-    <string name="max_temperature">max \n%1$d\u00B0</string>
-    <string name="min_temperature">min \n%1$d\u00B0</string>
+    <string name="current_temperature">%1$d\u00B0c</string>
+    <string name="max_min_temperature">max  min\n%1$d\u00B0 | %2$d\u00B0</string>
     <string name="wind_speed">%1$s %2$d м\с</string>
     <string name="base_url_upload_data_weather">https://api.weatherbit.io/v2.0/</string>
     <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/</string>
     <string name="input_city_name">Введите название городе</string>
     <string name="add_text_button">Добавить</string>
+    <string name="empty_cities">Нету данных для отображения.\n Пожалуйста включите интернет, а затем добавьте город.</string>
+
+    <string name="clear_weather">Ясно</string>
+    <string name="partially_cloudy_weather">Переменная\nоблачность</string>
+    <string name="cloudy_weather">Облачно</string>
+    <string name="rain_weather">Дождь</string>
+    <string name="snow_weather">Снег</string>
+    <string name="mist_weather">Туман</string>
+    <string name="thunderstorm_weather">Дождь\nс грозой</string>
+
 
 </resources>

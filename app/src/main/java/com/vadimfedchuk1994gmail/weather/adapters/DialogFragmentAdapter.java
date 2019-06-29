@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.vadimfedchuk1994gmail.weather.R;
 
@@ -17,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
 public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentAdapter.ViewHolder> {
+
     private Context mContext;
     private List<String> mDataSet;
     private  SingleDialogClickListener sClickListener;
@@ -28,50 +29,11 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
         mDataSet = list;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        @BindView(R.id.card_view_fragment_dialog)
-        CardView mCardView;
-        @BindView(R.id.city_country_text_view)
-        TextView mTextViewLabel;
-        @BindView(R.id.image_location)
-        ImageView imageLocation;
-
-        public ViewHolder(View v){
-            super(v);
-            ButterKnife.bind(this, v);
-            mCardView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            isSelected = getAdapterPosition();
-            sClickListener.onItemClickListener(getAdapterPosition(), v);
-        }
-
-        private void bind(String city, Context mContext) {
-            mTextViewLabel.setText(city);
-        }
-    }
-
-    public void selectedItem() {
-        notifyDataSetChanged();
-    }
-
-    public void setOnItemClickListener(SingleDialogClickListener clickListener) {
-        sClickListener = clickListener;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_cities_list, parent,false);
-        return new ViewHolder(view);
-    }
-
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
 
-        String animal = mDataSet.get(position);
-        holder.bind(animal, mContext);
+        String city = mDataSet.get(position);
+        holder.bind(city, mContext);
         if(position == isSelected) {
             holder.mCardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
             holder.mTextViewLabel.setTextColor(mContext.getResources().getColor(android.R.color.white));
@@ -84,6 +46,26 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
 
     }
 
+    public void selectedItem() {
+        notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListener(SingleDialogClickListener clickListener) {
+        sClickListener = clickListener;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_cities_list, parent, false);
+        return new ViewHolder(view);
+    }
+
+    public void setList(List<String> dataSet) {
+        //mDataSet.clear();
+        this.mDataSet = dataSet;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount(){
         return mDataSet.size();
@@ -93,8 +75,29 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
         void onItemClickListener(int position, View view);
     }
 
-    public void setList(List<String> dataSet) {
-        this.mDataSet = dataSet;
-        notifyDataSetChanged();
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.card_view_fragment_dialog)
+        CardView mCardView;
+        @BindView(R.id.city_country_text_view)
+        TextView mTextViewLabel;
+        @BindView(R.id.image_location)
+        ImageView imageLocation;
+
+        public ViewHolder(View v) {
+            super(v);
+            ButterKnife.bind(this, v);
+            mCardView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            isSelected = getAdapterPosition();
+            sClickListener.onItemClickListener(getAdapterPosition(), v);
+        }
+
+        private void bind(String city, Context mContext) {
+
+            mTextViewLabel.setText(city);
+        }
     }
 }

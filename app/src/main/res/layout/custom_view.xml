@@ -1,117 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_view_main"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
-    android:layout_margin="2dp"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
-    card_view:cardBackgroundColor="@color/colorAccent"
-    card_view:cardCornerRadius="12dp"
-    card_view:cardElevation="4dp"
-    card_view:cardMaxElevation="6dp"
-    card_view:cardPreventCornerOverlap="true">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/clear_image"/>
+    android:id="@+id/card_view_main"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    card_view:cardBackgroundColor="#ffffff"
+    card_view:cardCornerRadius="20dp"
+    card_view:cardElevation="2dp"
+    card_view:cardMaxElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"
+            tools:layout_editor_absoluteX="192dp"
+            tools:layout_editor_absoluteY="0dp"/>
 
         <TextView
-            android:id="@+id/cityCountryName"
+            android:id="@+id/text_cityName"
             style="@style/textView_style"
+            android:layout_marginBottom="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            card_view:layout_constraintLeft_toLeftOf="parent"
-            card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent"
-            tools:text="city country"/>
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/image_weather_icon"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="Kharkov"/>
 
         <ImageView
-            android:id="@+id/icon_current_weather"
+            android:id="@+id/image_weather_icon"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/icon"/>
+
+        <TextView
+            android:id="@+id/text_description_weather"
+            style="@style/textView_style"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:scaleType="centerCrop"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/cityCountryName"
-            card_view:layout_constraintVertical_bias="0.0"
-            tools:contentDescription="icon_current_weather"
-            tools:src="@drawable/image"/>
+            app:layout_constraintHorizontal_bias="0.52"
+            app:layout_constraintLeft_toLeftOf="@+id/image_weather_icon"
+            app:layout_constraintRight_toRightOf="@+id/image_weather_icon"
+            app:layout_constraintTop_toBottomOf="@+id/image_weather_icon"
+            tools:text="Clear"/>
 
         <TextView
-            android:id="@+id/description_weather"
+            android:id="@+id/text_current_temperature"
             style="@style/textView_style"
-            android:layout_margin="4dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@id/icon_current_weather"
-            tools:text="description"/>
+            android:textSize="60sp"
+            app:layout_constraintBottom_toBottomOf="@+id/image_weather_icon"
+            app:layout_constraintHorizontal_bias="0.45"
+            app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/image_weather_icon"
+            tools:text="19\u00b0"/>
 
         <TextView
-            android:id="@+id/current_temperature"
+            android:id="@+id/text_max_min_temperature"
             style="@style/textView_style"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textSize="50sp"
-            card_view:layout_constraintBottom_toTopOf="@+id/description_weather"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.072"
-            card_view:layout_constraintStart_toEndOf="@+id/icon_current_weather"
-            card_view:layout_constraintTop_toBottomOf="@+id/cityCountryName"
-            card_view:layout_constraintVertical_bias="0.0"
-            tools:text="30\u00B0"/>
-
-        <TextView
-            android:id="@+id/max_temperature"
-            style="@style/textView_style"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="8dp"
-            card_view:layout_constraintStart_toEndOf="@+id/current_temperature"
-            card_view:layout_constraintTop_toBottomOf="@id/cityCountryName"
-            tools:text="max \n20\u00B0"/>
-
-        <TextView
-            android:id="@+id/min_temperature"
-            style="@style/textView_style"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.315"
-            card_view:layout_constraintStart_toEndOf="@+id/max_temperature"
-            card_view:layout_constraintTop_toBottomOf="@id/cityCountryName"
-            tools:text="min \n20\u00B0"/>
-
-        <TextView
-            android:id="@+id/wind_speed_destination"
-            style="@style/textView_style"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
-            card_view:layout_constraintBottom_toTopOf="@+id/description_weather"
-            card_view:layout_constraintEnd_toEndOf="@+id/min_temperature"
-            card_view:layout_constraintStart_toStartOf="@+id/max_temperature"
-            card_view:layout_constraintTop_toBottomOf="@+id/current_temperature"
-            card_view:layout_constraintVertical_bias="0.366"
-            tools:text="ВЮВ 1050 м/с"/>
-
+            android:textSize="30sp"
+            android:textStyle="normal"
+            app:layout_constraintBaseline_toBaselineOf="@+id/text_description_weather"
+            app:layout_constraintLeft_toLeftOf="@+id/text_current_temperature"
+            app:layout_constraintRight_toRightOf="@+id/text_current_temperature"
+            tools:text="max  min\n10\u00b0 | 20\u00b0"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

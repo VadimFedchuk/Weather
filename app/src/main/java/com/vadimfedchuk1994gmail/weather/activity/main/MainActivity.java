@@ -4,6 +4,9 @@ package com.vadimfedchuk1994gmail.weather.activity.main;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -16,6 +19,7 @@ import com.vadimfedchuk1994gmail.weather.adapters.MainAdapter;
 import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
 import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
 import com.vadimfedchuk1994gmail.weather.pojo.Weather;
+import com.vadimfedchuk1994gmail.weather.tools.Const;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +32,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class MainActivity extends BaseActivity implements SearchCityDialogFragment.AddCityDialogListener, MainAdapter.ClickListener {
+public class MainActivity extends BaseActivity implements
+        SearchCityDialogFragment.AddCityDialogListener,
+        MainAdapter.ClickListener,
+        OnEditTextChangedListener {
 
     private RecyclerView mRecyclerView;
     private MainAdapter mAdapter;
@@ -37,10 +44,15 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton myFab;
     AppDatabase database;
+    private LinearLayout layoutEmpty;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        layoutEmpty = findViewById(R.id.empty_view_layout);
+        layoutEmpty.setVisibility(View.VISIBLE);
         TypeStart type = (TypeStart) getIntent().getSerializableExtra("type");
         showAlertDialog(type);
         initBars();
@@ -89,11 +101,16 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
         FragmentManager fm = getSupportFragmentManager();
         SearchCityDialogFragment searchCityDialogFragment = SearchCityDialogFragment.newInstance("Some Title");
         searchCityDialogFragment.show(fm, "fragment_edit_name");
+        searchCityDialogFragment.setOnEditTextChangedListener(this);
 
     }
 
 
     public void showData(List<Weather> data) {
+        if (data.size() > 0) {
+            layoutEmpty.setVisibility(View.GONE);
+        }
+        Log.i(Const.LOG, data.get(0).date);
         mAdapter.setList(data);
     }
 
@@ -137,13 +154,13 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
     // from adapter
     @Override
     public void onClick(String name) {
-
+//open detail activity
     }
 
     // from adapter
     @Override
     public void onLongClick(Weather data) {
-
+//open dialog fragment
     }
 
     @Override
@@ -151,6 +168,12 @@ public class MainActivity extends BaseActivity implements SearchCityDialogFragme
         super.onDestroy();
         database.close();
         presenter.detachView();
+    }
+
+    @Override
+    public void onEditTextChanged(String query, OnCompleteLoad callback) {
+        Log.i(Const.LOG, query);
+        callback.onCompleteLoad(query + " 111");
     }
 
     public static enum TypeStart {

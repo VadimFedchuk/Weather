@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.Build;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,7 +37,9 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
     }
 
     public void detachView() {
+        model.disposeDisposable();
         mActivity = null;
+
     }
 
     public void viewIsReady() {
@@ -56,18 +57,18 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
         }
     }
 
+
     private void checkCurrentLocation() {
         int errorCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity);
         Locale myLocale = new Locale(WeatherPreferences.getStoredLanguage(mActivity));
         if (errorCode == ConnectionResult.SUCCESS) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(mActivity);
+
             if (ActivityCompat.checkSelfPermission(mActivity,
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(mActivity,
                             Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    mActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, -1);
-                }
+
             }
             fusedLocationClient.getLastLocation().addOnSuccessListener(mActivity, location -> {
                 Geocoder gcd = new Geocoder(mActivity, myLocale);
@@ -81,6 +82,8 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
 
                 if (addresses.size() != 0) {
                     downloadData(addresses.get(0).getLocality());
+                } else {
+                    mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);
                 }
             });
         } else {
@@ -89,7 +92,6 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
     }
 
     private void downloadData(String locality) {
-        Log.i("TESTTEST", locality);
         model.loadData(locality);
     }
 
