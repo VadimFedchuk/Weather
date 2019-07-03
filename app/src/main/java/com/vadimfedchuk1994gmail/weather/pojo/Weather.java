@@ -5,15 +5,14 @@ import com.vadimfedchuk1994gmail.weather.network.weather_response.Datum;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
 public class Weather {
 
-    @PrimaryKey
-    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    public int id;
     public String name;
     public String date;
     public String description;
@@ -27,6 +26,7 @@ public class Weather {
     public long sunset;
     public String wind_dir; // направление ветра
     public double wind_speed;
+
 
     public Weather(String name, String date, String description, String icon, double temperature,
                    double max_temp, double min_temp, long pop, double pres, long sunrise,
@@ -49,7 +49,8 @@ public class Weather {
     public static List<Weather> cloneList(List<Datum> weatherResponses, String city) {
         List<Weather> list = new ArrayList<>();
         for (Datum data : weatherResponses) {
-            list.add(new Weather(city,
+            list.add(new Weather(
+                    city,
                     data.getValidDate(),
                     data.getWeather().getDescription(),
                     data.getWeather().getIcon(),
@@ -64,5 +65,25 @@ public class Weather {
                     data.getWindSpd()));
         }
         return list;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof Weather)) {
+            return false;
+        }
+
+        return name.equalsIgnoreCase(((Weather) obj).name);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (name != null ? name.hashCode() : 0);
+        return hash;
     }
 }

@@ -61,8 +61,8 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
     }
 
     public void setList(List<String> dataSet) {
-        //mDataSet.clear();
-        this.mDataSet = dataSet;
+        mDataSet.clear();
+        mDataSet.addAll(dataSet);
         notifyDataSetChanged();
     }
 

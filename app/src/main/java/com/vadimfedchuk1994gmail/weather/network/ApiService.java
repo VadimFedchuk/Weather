@@ -1,9 +1,7 @@
 package com.vadimfedchuk1994gmail.weather.network;
 
-import com.vadimfedchuk1994gmail.weather.network.cities_response.CitiesResponse;
+import com.vadimfedchuk1994gmail.weather.network.cities_response.CityResponse;
 import com.vadimfedchuk1994gmail.weather.network.weather_response.WeatherResponse;
-
-import java.util.List;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;
@@ -17,7 +15,8 @@ public interface ApiService {
                                            @Query("key") String api_key,
                                            @Query("lang") String language);
 
-    @GET("aq")
-    Single<List<CitiesResponse>> getCities(@Url String url,
-                                           @Query("query") String query);
+    @GET
+    Single<CityResponse> getCities(@Url String url,
+                                   @Query("query") String query,
+                                   @Query("lang") String lang);
 }

@@ -1,10 +1,12 @@
 package com.vadimfedchuk1994gmail.weather.activity.main;
 
+import java.util.List;
+
 public interface OnEditTextChangedListener {
 
     void onEditTextChanged(String query, OnCompleteLoad callback);
 
-    public interface OnCompleteLoad {
-        void onCompleteLoad(String q);
+    interface OnCompleteLoad {
+        void onCompleteLoad(List<String> list);
     }
 }

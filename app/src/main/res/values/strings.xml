@@ -5,7 +5,7 @@
     <string name="max_min_temperature">max  min\n%1$d\u00B0 | %2$d\u00B0</string>
     <string name="wind_speed">%1$s %2$d м\с</string>
     <string name="base_url_upload_data_weather">https://api.weatherbit.io/v2.0/</string>
-    <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/</string>
+    <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/aq</string>
     <string name="input_city_name">Введите название городе</string>
     <string name="add_text_button">Добавить</string>
     <string name="empty_cities">Нету данных для отображения.\n Пожалуйста включите интернет, а затем добавьте город.</string>

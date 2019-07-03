@@ -39,6 +39,7 @@ public class SearchCityDialogFragment extends DialogFragment
     OnEditTextChangedListener mListener;
     private List<String> cities = new ArrayList<>();
     private int selectedItem = 0;
+    
 
     public static SearchCityDialogFragment newInstance(String title) {
         SearchCityDialogFragment frag = new SearchCityDialogFragment();
@@ -64,10 +65,9 @@ public class SearchCityDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onCompleteLoad(String q) {
-
-        //cities.clear();
-        cities.add(q);
+    public void onCompleteLoad(List<String> list) {
+        cities.clear();
+        cities.addAll(list);
         adapter.setList(cities);
     }
 
@@ -123,7 +123,8 @@ public class SearchCityDialogFragment extends DialogFragment
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 3) {
-                    mListener.onEditTextChanged(s.toString(), (SearchCityDialogFragment.this::onCompleteLoad));
+                    String cap = s.toString().substring(0, 1).toUpperCase() + s.toString().substring(1);
+                    mListener.onEditTextChanged(cap, (SearchCityDialogFragment.this::onCompleteLoad));
                 }
             }
         });

@@ -7,6 +7,9 @@ import com.vadimfedchuk1994gmail.weather.pojo.TypeWeather;
 
 public class PictureHelper {
 
+    private PictureHelper() {
+    }
+
     public static int choosePicture(String nameIcon) {
         switch (nameIcon) {
             case "c01d":

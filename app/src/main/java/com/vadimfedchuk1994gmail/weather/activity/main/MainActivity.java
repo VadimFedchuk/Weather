@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity implements
     private FloatingActionButton myFab;
     AppDatabase database;
     private LinearLayout layoutEmpty;
+    private OnCompleteLoad callbackOnCompleteLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +110,9 @@ public class MainActivity extends BaseActivity implements
     public void showData(List<Weather> data) {
         if (data.size() > 0) {
             layoutEmpty.setVisibility(View.GONE);
+            Log.i(Const.LOG, data.get(0).date + " " + data.get(data.size() - 1).date);
         }
-        Log.i(Const.LOG, data.get(0).date);
+
         mAdapter.setList(data);
     }
 
@@ -166,17 +168,26 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        database.close();
-        presenter.detachView();
+        if (database != null) {
+            database.close();
+        }
+        if (presenter != null) {
+            presenter.detachView();
+        }
     }
 
     @Override
     public void onEditTextChanged(String query, OnCompleteLoad callback) {
         Log.i(Const.LOG, query);
-        callback.onCompleteLoad(query + " 111");
+        presenter.loadCities(query);
+        callbackOnCompleteLoad = callback;
     }
 
-    public static enum TypeStart {
+    public void onCompleteLoadCities(List<String> cityResponse) {
+        callbackOnCompleteLoad.onCompleteLoad(cityResponse);
+    }
+
+    public enum TypeStart {
         UPDATE, NO_UPDATE
     }
 }
