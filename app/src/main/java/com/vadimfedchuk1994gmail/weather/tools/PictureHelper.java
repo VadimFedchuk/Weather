@@ -83,45 +83,37 @@ public class PictureHelper {
         TypeWeather obj;
         String description;
         int resourceIdIcon = 0;
-        int resourceIdBackground = 0;
         switch (type) {
             case Const.ImageConst.TYPE_VIEW_CLEAR:
                 description = mContext.getString(R.string.clear_weather);
                 resourceIdIcon = R.drawable.clear_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorClearBackground);
                 break;
             case Const.ImageConst.TYPE_VIEW_PARTIALLY_CLOUDY:
                 description = mContext.getString(R.string.partially_cloudy_weather);
                 resourceIdIcon = R.drawable.partially_cloudy_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorPartiallyCloudyAndSnowBackground);
                 break;
             case Const.ImageConst.TYPE_VIEW_CLOUDY:
                 description = mContext.getString(R.string.cloudy_weather);
                 resourceIdIcon = R.drawable.cloudy_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorCloudyBackground);
                 break;
             case Const.ImageConst.TYPE_VIEW_RAIN:
                 description = mContext.getString(R.string.rain_weather);
                 resourceIdIcon = R.drawable.rain_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorRainAndThunderstormBackground);
                 break;
             case Const.ImageConst.TYPE_VIEW_SNOW:
                 description = mContext.getString(R.string.snow_weather);
                 resourceIdIcon = R.drawable.snow_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorPartiallyCloudyAndSnowBackground);
                 break;
             case Const.ImageConst.TYPE_VIEW_THUNDERSTORM:
                 description = mContext.getString(R.string.thunderstorm_weather);
                 resourceIdIcon = R.drawable.thundersthorm_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorRainAndThunderstormBackground);
                 break;
             default:
                 description = mContext.getString(R.string.mist_weather);
                 resourceIdIcon = R.drawable.foggy_weather_icon;
-                resourceIdBackground = mContext.getResources().getColor(R.color.colorFogBackground);
                 break;
         }
-        obj = new TypeWeather(description, resourceIdIcon, resourceIdBackground);
+        obj = new TypeWeather(description, resourceIdIcon);
         return obj;
     }
 }

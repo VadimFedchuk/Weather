@@ -8,4 +8,11 @@
       android:title="Настройки"
       android:icon="@drawable/ic_settings"
       app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_ads"
+        android:icon="@drawable/ic_ads"
+        android:orderInCategory="100"
+        android:title="Настройки"
+        app:showAsAction="ifRoom"/>
 </menu>

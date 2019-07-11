@@ -2,7 +2,9 @@
 <resources>
     <string name="app_name">Weather</string>
     <string name="current_temperature">%1$d\u00B0c</string>
-    <string name="max_min_temperature">max  min\n%1$d\u00B0 | %2$d\u00B0</string>
+    <string name="max_min_temperature">%1$s \n%2$s</string>
+    <string name="max_min_temperature_2">%1$s | %2$s</string>
+    <string name="wind_speed_direction">%1$s\n%2$d м\с</string>
     <string name="wind_speed">%1$s %2$d м\с</string>
     <string name="base_url_upload_data_weather">https://api.weatherbit.io/v2.0/</string>
     <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/aq</string>
@@ -17,6 +19,31 @@
     <string name="snow_weather">Снег</string>
     <string name="mist_weather">Туман</string>
     <string name="thunderstorm_weather">Дождь\nс грозой</string>
+    <string name="delete">Удалить</string>
+    <string name="return_data">Вернуть</string>
+    <string name="delete_data">%1$s удален из базы</string>
+    <string name="title_dialog_delete">Вы уверены, что хотите удалить %1$s</string>
+    <string name="title_agree_delete">Да, удалить</string>
+    <string name="key_temperature_units">key_temperature_units</string>
+    <string name="title_temperature_units">Единицы температуры</string>
+    <string name="pref_header_about">About</string>
+    <string name="summary_about">О приложение текст</string>
+    <string name="app_version">1.0</string>
+    <string name="title_version">Version</string>
+    <string name="title_send_feedback">Отправить отзыв о приложении</string>
+    <string name="key_send_feedback">key_send_feedback</string>
+    <string name="summary_support">Пожелание по улучшению, а также жалобы.</string>
+    <string name="title_terms">Оценить приложение</string>
+    <string name="url_rate_app"><![CDATA[https://play.google.com/store/apps/details?id=com.belkatechnologies.clockmaker&hl=ru]]></string>
+    <string name="pref_contact_with_developer">Связь с разработчиком</string>
+    <string name="key_contact">key_contact</string>
+    <string name="choose_email_client">Choose email client</string>
+    <string name="precipitation_detail">Вер. ос. %1$d %%</string>
+    <string name="precipitation">%1$d %%</string>
+    <string name="pressure_detail">Давление: %1$d мм </string>
+    <string name="wind_condition">%1$s\n%2$.1f m/s</string>
+
+    <string name="maxmin_title">max\n   \\min</string>
 
 
 </resources>

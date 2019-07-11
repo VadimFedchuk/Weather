@@ -15,21 +15,25 @@ import com.vadimfedchuk1994gmail.weather.tools.PictureHelper;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.vadimfedchuk1994gmail.weather.tools.ConverterHelper.convertCelsiusToFahrenheit;
+import static com.vadimfedchuk1994gmail.weather.tools.ConverterHelper.convertTimeStampToDate;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private Context mContext;
     private ClickListener clicklistener;
     private List<Weather> mDataSet;
+    private boolean isUnitCelsius = true;
 
-
-    public MainAdapter(Context context, List<Weather> dataSet) {
+    public MainAdapter(Context context, List<Weather> dataSet, boolean unit) {
         mContext = context;
         mDataSet = dataSet;
+        this.isUnitCelsius = unit;
     }
 
     @NonNull
@@ -52,7 +56,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     }
 
     public void setList(List<Weather> dataSet) {
-        this.mDataSet = dataSet;
+        dataSet.size();
+        mDataSet.clear();
+        mDataSet.addAll(dataSet);
         notifyDataSetChanged();
     }
 
@@ -62,19 +68,32 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return PictureHelper.choosePicture(mDataSet.get(position).icon);
+        return PictureHelper.choosePicture(mDataSet.get(position).getIcon());
+    }
+
+    public void removeItem(int position) {
+        mDataSet.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(Weather item, int position) {
+        mDataSet.add(position, item);
+        notifyItemInserted(position);
+    }
+
+    public void setUnitCelsius(boolean unitCelsius) {
+        isUnitCelsius = unitCelsius;
+        notifyDataSetChanged();
     }
 
     public interface ClickListener {
         void onClick(String name);
 
-        void onLongClick(Weather data);
+        void onLongClick(Weather data, int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.card_view_main)
-        CardView mCardView;
         @BindView(R.id.text_cityName)
         TextView mNameTextView;
         @BindView(R.id.image_weather_icon)
@@ -85,26 +104,44 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         TextView mCurrentTemperatureTextView;
         @BindView(R.id.text_max_min_temperature)
         TextView mMaxMinTemperatureTextView;
+        @BindView(R.id.view_foreground)
+        public ConstraintLayout viewForeground;
+        @BindView(R.id.text_precipitation)
+        TextView mPrecipitationTextView;
+        @BindView(R.id.text_sunrise)
+        TextView mSunriseTextView;
+        @BindView(R.id.text_sunset)
+        TextView mSunsetTextView;
+        @BindView(R.id.text_wind)
+        TextView mWindTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(v -> clicklistener.onClick(mDataSet.get(getAdapterPosition()).name));
+            itemView.setOnClickListener(v -> clicklistener.onClick(mDataSet.get(getAdapterPosition()).getName()));
             itemView.setOnLongClickListener(v -> {
-                clicklistener.onLongClick(mDataSet.get(getAdapterPosition()));
+                clicklistener.onLongClick(mDataSet.get(getAdapterPosition()), getAdapterPosition());
                 return true;
             });
         }
 
         private void bind(Weather data, Context mContext, int viewType) {
             TypeWeather obj = PictureHelper.generateObject(mContext, viewType);
-            mCardView.setCardBackgroundColor(obj.getResourceIdBackground());
-            mNameTextView.setText(data.name);
+
+            mNameTextView.setText(data.getName());
             mIconImageView.setImageResource(obj.getResourceIdIcon());
             mDescriptionTextView.setText(obj.getDescription());
-            mCurrentTemperatureTextView.setText(mContext.getResources().getString(R.string.current_temperature, (int) data.temperature));
-            mMaxMinTemperatureTextView.setText(mContext.getResources().getString(R.string.max_min_temperature, (int) data.max_temp, (int) data.min_temp));
-
+            mCurrentTemperatureTextView.setText(isUnitCelsius ?
+                    mContext.getResources().getString(R.string.current_temperature, (int) data.getTemperature()) :
+                    convertCelsiusToFahrenheit(data.getTemperature()));
+            mMaxMinTemperatureTextView.setText(isUnitCelsius ?
+                    mContext.getResources().getString(R.string.max_min_temperature, (int) data.getMax_temp() + "\u00B0c", (int) data.getMin_temp() + "\u00B0c") :
+                    mContext.getResources().getString(R.string.max_min_temperature, convertCelsiusToFahrenheit(data.getMax_temp()), convertCelsiusToFahrenheit(data.getMin_temp())));
+            mPrecipitationTextView.setText(mContext.getResources().getString(R.string.precipitation, (int) data.getPop()));
+            mSunriseTextView.setText(convertTimeStampToDate(data.getSunrise()));
+            mSunsetTextView.setText(convertTimeStampToDate(data.getSunset()));
+            mWindTextView.setText(mContext.getResources().getString(R.string.wind_condition, data.getWind_dir(), data.getWind_speed()));
         }
     }
+
 }

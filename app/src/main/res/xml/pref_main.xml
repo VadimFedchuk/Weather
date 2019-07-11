@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="General">
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/title_temperature_units"
+            android:divider="@drawable/gradient_background"
+            android:entries="@array/pref_temperature_units_entries"
+            android:entryValues="@array/pref_temperature_units_values"
+            android:key="@string/key_temperature_units"
+            android:title="@string/title_temperature_units"/>
+
+    </PreferenceCategory>
+
+    <Preference
+        android:divider="@drawable/gradient_background"
+        android:key="@string/key_send_feedback"
+        android:summary="@string/summary_support"
+        android:title="@string/title_send_feedback"/>
+
+    <Preference
+        android:divider="@drawable/gradient_background"
+        android:title="@string/title_terms">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="@string/url_rate_app"/>
+    </Preference>
+    <Preference
+        android:divider="@drawable/gradient_background"
+        android:icon="@drawable/ic_mail_outline_24dp"
+        android:key="@string/key_contact"
+        android:title="@string/pref_contact_with_developer"/>
+
+
+    <Preference
+        android:divider="@drawable/gradient_background"
+        android:summary="@string/app_version"
+        android:title="@string/title_version"/>
+
+    <Preference
+        android:selectable="false"
+        android:summary="@string/summary_about"
+        />
+
+</PreferenceScreen>

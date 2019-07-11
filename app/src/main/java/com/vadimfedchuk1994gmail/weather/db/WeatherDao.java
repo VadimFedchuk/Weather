@@ -24,6 +24,9 @@ public interface WeatherDao {
     @Query("SELECT * FROM Weather")
     Observable<List<Weather>> getAllData();
 
+    @Query("SELECT * FROM Weather WHERE name = :name")
+    Single<List<Weather>> getAllDatabyCity(String name);
+
     @Query("SELECT name FROM Weather")
     Observable<List<String>> getCities();
 

@@ -1,41 +1,54 @@
 package com.vadimfedchuk1994gmail.weather.activity.main;
 
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tapadoo.alerter.Alerter;
 import com.vadimfedchuk1994gmail.weather.R;
 import com.vadimfedchuk1994gmail.weather.SearchCityDialogFragment;
 import com.vadimfedchuk1994gmail.weather.WeatherApp;
+import com.vadimfedchuk1994gmail.weather.activity.SettingsActivity;
 import com.vadimfedchuk1994gmail.weather.activity.base.BaseActivity;
+import com.vadimfedchuk1994gmail.weather.activity.detail.DetailActivity;
 import com.vadimfedchuk1994gmail.weather.adapters.MainAdapter;
 import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
 import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
 import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 import com.vadimfedchuk1994gmail.weather.tools.Const;
+import com.vadimfedchuk1994gmail.weather.tools.RecyclerItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class MainActivity extends BaseActivity implements
         SearchCityDialogFragment.AddCityDialogListener,
         MainAdapter.ClickListener,
-        OnEditTextChangedListener {
+        OnEditTextChangedListener,
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private RecyclerView mRecyclerView;
     private MainAdapter mAdapter;
@@ -46,23 +59,29 @@ public class MainActivity extends BaseActivity implements
     AppDatabase database;
     private LinearLayout layoutEmpty;
     private OnCompleteLoad callbackOnCompleteLoad;
+    SharedPreferences sp;
+    private List<Weather> data = new ArrayList<>();
+    private boolean isUnitCelsius = true;
+    private ContentLoadingProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mProgressBar = findViewById(R.id.progressBar);
+        showProgressBar();
         layoutEmpty = findViewById(R.id.empty_view_layout);
-        layoutEmpty.setVisibility(View.VISIBLE);
+
         TypeStart type = (TypeStart) getIntent().getSerializableExtra("type");
         showAlertDialog(type);
         initBars();
         init();
         setTitle("");
-
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
-    private void showAlertDialog(TypeStart type) {
+    public void showAlertDialog(TypeStart type) {
         Alerter alerter = Alerter.create(this);
         alerter.setDuration(2000);
         alerter.setEnterAnimation(R.anim.alerter_slide_in_from_left);
@@ -91,7 +110,9 @@ public class MainActivity extends BaseActivity implements
         myFab.setOnClickListener(v -> showDialogFragment());
         bottomAppBar.setOnMenuItemClickListener(item -> {
             if(item.getItemId() == R.id.action_settings) {
-                showSnackBar(mCoordinatorLayout, myFab,"Settings");
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            } else if (item.getItemId() == R.id.action_ads) {
+                
             }
             return true;
         });
@@ -110,15 +131,21 @@ public class MainActivity extends BaseActivity implements
     public void showData(List<Weather> data) {
         if (data.size() > 0) {
             layoutEmpty.setVisibility(View.GONE);
-            Log.i(Const.LOG, data.get(0).date + " " + data.get(data.size() - 1).date);
+            this.data.clear();
+            this.data.addAll(data);
+        } else {
+            layoutEmpty.setVisibility(View.VISIBLE);
         }
-
+        hideProgressBar();
         mAdapter.setList(data);
     }
 
     @Override
     public void onCompleteAddCity(String city) {
         showSnackBar(mCoordinatorLayout, myFab, city);
+        int a = city.indexOf(",");
+        city = city.substring(0, a);
+        presenter.loadData(city);
     }
 
     @Override
@@ -131,10 +158,12 @@ public class MainActivity extends BaseActivity implements
             layout = new LinearLayoutManager(this);
         }
         mRecyclerView.setLayoutManager(layout);
-
-        mAdapter = new MainAdapter(this, new ArrayList<>());
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mAdapter = new MainAdapter(this, new ArrayList<>(), isUnitCelsius);
         mAdapter.setClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
         database = WeatherApp.getInstance().getDatabase();
         WeatherDataSource source = new WeatherDataSource(this);
         MainModel model = new MainModel(database, source);
@@ -145,24 +174,56 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void showProgressBar() {
-
+        layoutEmpty.setVisibility(View.VISIBLE);
+        mProgressBar.show();
     }
 
     @Override
     public void hideProgressBar() {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.hide();
 
     }
 
     // from adapter
     @Override
     public void onClick(String name) {
-//open detail activity
+        startActivity(new Intent(this, DetailActivity.class)
+                .putExtra("city", name));
+        Animatoo.animateSlideLeft(this);
     }
 
     // from adapter
     @Override
-    public void onLongClick(Weather data) {
-//open dialog fragment
+    public void onLongClick(Weather data, int position) {
+        String name = data.getName();
+        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText(getResources().getString(R.string.title_dialog_delete, name))
+                .setConfirmText(getResources().getString(R.string.title_agree_delete))
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog
+                                .setTitleText(getResources().getString(R.string.delete_data, name))
+                                .setConfirmText("OK")
+                                .setConfirmClickListener(null)
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        mAdapter.removeItem(position);
+                        presenter.deleteData(name);
+                    }
+                })
+                .show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        String scale = sp.getString("key_temperature_units", "1");
+        isUnitCelsius = scale.equals("1");
+        if (mAdapter != null) {
+            mAdapter.setUnitCelsius(isUnitCelsius);
+        }
+        super.onResume();
     }
 
     @Override
@@ -185,6 +246,43 @@ public class MainActivity extends BaseActivity implements
 
     public void onCompleteLoadCities(List<String> cityResponse) {
         callbackOnCompleteLoad.onCompleteLoad(cityResponse);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof MainAdapter.ViewHolder) {
+            // get the removed item name to display it in snack bar
+            String name = data.get(viewHolder.getAdapterPosition()).getName();
+
+            // backup of removed item for undo purpose
+            final Weather deletedItem = data.get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            // remove the item from recycler view
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            // showing snack bar with Undo option
+            Snackbar snackbar = showSnackBar(mCoordinatorLayout, myFab, getResources().getString(R.string.delete_data, name));
+            snackbar.setAction(getResources().getString(R.string.return_data), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // undo is selected, restore the deleted item
+                    mAdapter.restoreItem(deletedItem, deletedIndex);
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
+
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar transientBottomBar, int event) {
+                    super.onDismissed(transientBottomBar, event);
+                    presenter.deleteData(name);
+
+                }
+            });
+        }
     }
 
     public enum TypeStart {

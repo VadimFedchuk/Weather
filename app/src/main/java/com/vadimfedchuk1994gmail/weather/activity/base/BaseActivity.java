@@ -10,7 +10,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public abstract class BaseActivity extends AppCompatActivity implements MvpContract.View{
 
-    public void showSnackBar(CoordinatorLayout coordinatorLayout, FloatingActionButton fab, String text) {
+    public Snackbar showSnackBar(CoordinatorLayout coordinatorLayout, FloatingActionButton fab, String text) {
 
         Snackbar snackbar = Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT);
         View snackBarView = snackbar.getView();
@@ -22,7 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpContr
                 params.bottomMargin + 100);
         snackBarView.setLayoutParams(params);
         snackbar.setAnchorView(fab);
-        snackbar.show();
+        return snackbar;
 
     }
 }

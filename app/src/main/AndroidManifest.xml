@@ -17,9 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activity.main.MainActivity"
-                  android:windowSoftInputMode="adjustResize">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon">
+        <activity
+            android:name=".activity.detail.DetailActivity"
+            android:parentActivityName=".activity.main.MainActivity">
+        </activity>
+        <activity
+            android:name=".activity.main.MainActivity"
+            android:windowSoftInputMode="adjustResize">
         </activity>
         <activity android:name=".activity.splash.SplashActivity">
             <intent-filter>
@@ -27,9 +33,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-    </activity>
-        <receiver android:name="com.vadimfedchuk1994gmail.weather.tools.ConnectionChangeReceiver"
-                  android:label="NetworkConnection">
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:theme="@style/SettingsTheme"/>
+
+        <receiver
+            android:name=".tools.ConnectionChangeReceiver"
+            android:label="NetworkConnection">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>

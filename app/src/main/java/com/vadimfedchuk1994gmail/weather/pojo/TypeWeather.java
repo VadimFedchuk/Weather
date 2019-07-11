@@ -4,12 +4,10 @@ public class TypeWeather {
 
     private String description;
     private int resourceIdIcon;
-    private int resourceIdBackground;
 
-    public TypeWeather(String description, int resourceIdIcon, int resourceIdBackground) {
+    public TypeWeather(String description, int resourceIdIcon) {
         this.description = description;
         this.resourceIdIcon = resourceIdIcon;
-        this.resourceIdBackground = resourceIdBackground;
     }
 
     public String getDescription() {
@@ -18,9 +16,5 @@ public class TypeWeather {
 
     public int getResourceIdIcon() {
         return resourceIdIcon;
-    }
-
-    public int getResourceIdBackground() {
-        return resourceIdBackground;
     }
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -52,7 +53,6 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
         } else if (WeatherPreferences.getStoredConnectionChanged(mContext)) {
             Log.i(Const.LOG, "2 SplashPresenter viewIsReady");
             model.updateData();
-            //model.loadData("Одесса");
         } else {
             Log.i(Const.LOG, "3 SplashPresenter viewIsReady");
             mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);
@@ -62,7 +62,7 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
 
     private void checkCurrentLocation() {
         int errorCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity);
-        Locale myLocale = new Locale(WeatherPreferences.getStoredLanguage(mActivity));
+        Locale myLocale = new Locale("en");
         if (errorCode == ConnectionResult.SUCCESS) {
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(mActivity);
 
@@ -79,10 +79,10 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
                     addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Toast.makeText(mActivity, "failed splashpresenter " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
-                if (addresses.size() != 0) {
+                if (addresses != null && addresses.size() != 0) {
                     downloadData(addresses.get(0).getLocality());
                 } else {
                     mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);

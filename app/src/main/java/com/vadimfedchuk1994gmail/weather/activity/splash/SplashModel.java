@@ -29,8 +29,7 @@ public class SplashModel {
     private AppDatabase mAppDatabase;
     private int countFlag = 0;
     private int countCitiesForUpdate = 1;
-    private CompositeDisposable mDisposable = new CompositeDisposable();
-    boolean isUpdated = false;
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public SplashModel(WeatherDataSource weatherDataSource, AppDatabase database) {
         mWeatherDataSource = weatherDataSource;
@@ -41,7 +40,7 @@ public class SplashModel {
     public void loadData(String city) {
         Log.i("TESTTEST", "loadData " + city);
         Single<WeatherResponse> weatherResponseObservable = getLoadObservable(city);
-        mDisposable.add(weatherResponseObservable
+        mCompositeDisposable.add(weatherResponseObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<WeatherResponse>() {
@@ -67,14 +66,16 @@ public class SplashModel {
     }
 
     public void updateData() {
-        isUpdated = true;
         countCitiesForUpdate = 0;
-        mDisposable.add(mAppDatabase.getWeatherDao().getCities()
+        mCompositeDisposable.add(mAppDatabase.getWeatherDao().getCities()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Function<List<String>, ObservableSource<String>>() {
                     @Override
                     public ObservableSource<String> apply(List<String> cities) throws Exception {
+                        if (cities.isEmpty()) {
+                            callback.onComplete(false);
+                        }
                         return Observable.fromIterable(cities);
                     }
                 })
@@ -119,7 +120,7 @@ public class SplashModel {
     }
 
     private void getDeleteObservable(String city) {
-        mDisposable.add(mAppDatabase.getWeatherDao().deleteDataByName(city)
+        mCompositeDisposable.add(mAppDatabase.getWeatherDao().deleteDataByName(city)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -138,7 +139,7 @@ public class SplashModel {
     private void updateOrInsertData(WeatherResponse weatherResponse) {
         List<Weather> data = Weather.cloneList(weatherResponse.getData(), weatherResponse.getCityName());
 
-        mDisposable.add(mAppDatabase.getWeatherDao().insert(data)
+        mCompositeDisposable.add(mAppDatabase.getWeatherDao().insert(data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -158,32 +159,10 @@ public class SplashModel {
                         }
                     }
                 }));
-//            } else {
-//                mAppDatabase.getWeatherDao().update(data)
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(new DisposableCompletableObserver() {
-//                            @Override
-//                            public void onComplete() {
-//                                Log.i(Const.LOG, "onComplete update " + countFlag + " " + countCitiesForUpdate);
-//                                if (countFlag == countCitiesForUpdate) {
-//                                    callback.onComplete(true);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onError(Throwable e) {
-//                                Log.i(Const.LOG, "updateOrInsertData " + e.getMessage());
-//                                if (countFlag == countCitiesForUpdate) {
-//                                    callback.onComplete(false);
-//                                }
-//                            }
-//                        });
-//            }
     }
 
     public void disposeDisposable() {
-        mDisposable.dispose();
+        mCompositeDisposable.dispose();
     }
 
     public void setOnCompleteCallback(OnCompleteCallback callback) {

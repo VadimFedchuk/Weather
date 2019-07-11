@@ -13,16 +13,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vadimfedchuk1994gmail.weather.activity.main.OnEditTextChangedListener;
 import com.vadimfedchuk1994gmail.weather.adapters.DialogFragmentAdapter;
+import com.vadimfedchuk1994gmail.weather.tools.ConnectionChangeReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +34,8 @@ import butterknife.ButterKnife;
 
 public class SearchCityDialogFragment extends DialogFragment
         implements DialogFragmentAdapter.SingleDialogClickListener,
-        OnEditTextChangedListener.OnCompleteLoad {
+        OnEditTextChangedListener.OnCompleteLoad,
+        ConnectionChangeReceiver.onConnectionChangeCallback {
 
     @BindView(R.id.edit_text_search_city) MaterialEditText searchEditText;
     @BindView(R.id.recycler_view_search_cities) RecyclerView recyclerViewListCities;
@@ -39,7 +43,11 @@ public class SearchCityDialogFragment extends DialogFragment
     OnEditTextChangedListener mListener;
     private List<String> cities = new ArrayList<>();
     private int selectedItem = 0;
-    
+    @BindView(R.id.progressBarFragment)
+    ContentLoadingProgressBar mContentLoadingProgressBar;
+    @BindView(R.id.empty_view_layout_fragment)
+    LinearLayout emptyLayout;
+    private String query;
 
     public static SearchCityDialogFragment newInstance(String title) {
         SearchCityDialogFragment frag = new SearchCityDialogFragment();
@@ -66,9 +74,19 @@ public class SearchCityDialogFragment extends DialogFragment
 
     @Override
     public void onCompleteLoad(List<String> list) {
+        if (list.isEmpty()) {
+            emptyLayout.setVisibility(View.VISIBLE);
+        }
+        mContentLoadingProgressBar.setVisibility(View.GONE);
+        mContentLoadingProgressBar.hide();
         cities.clear();
         cities.addAll(list);
         adapter.setList(cities);
+    }
+
+    @Override
+    public void onConnectionChanged(boolean isConnected) {
+        mListener.onEditTextChanged(query, (SearchCityDialogFragment.this::onCompleteLoad));
     }
 
     public interface AddCityDialogListener {
@@ -83,6 +101,8 @@ public class SearchCityDialogFragment extends DialogFragment
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
+        ConnectionChangeReceiver receiver = new ConnectionChangeReceiver();
+        receiver.setOnConnectionChangeCallback(this);
         ButterKnife.bind(this, view);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         return view;
@@ -122,9 +142,11 @@ public class SearchCityDialogFragment extends DialogFragment
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() > 3) {
-                    String cap = s.toString().substring(0, 1).toUpperCase() + s.toString().substring(1);
-                    mListener.onEditTextChanged(cap, (SearchCityDialogFragment.this::onCompleteLoad));
+                mContentLoadingProgressBar.setVisibility(View.VISIBLE);
+                mContentLoadingProgressBar.show();
+                if (s.length() > 2) {
+                    query = s.toString().substring(0, 1).toUpperCase() + s.toString().substring(1);
+                    mListener.onEditTextChanged(query, (SearchCityDialogFragment.this::onCompleteLoad));
                 }
             }
         });
