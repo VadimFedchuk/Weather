@@ -1,6 +1,6 @@
 *.iml
 .gradle
-.apiKey
+!/.gitignore
 /local.properties
 /.idea/caches
 /.idea/libraries
