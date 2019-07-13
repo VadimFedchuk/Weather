@@ -1,5 +1,7 @@
 *.iml
 .gradle
+/apiKey
+/appke
 !/.gitignore
 /local.properties
 /.idea/caches
