@@ -27,12 +27,18 @@ android {
         debug {
             buildConfigField 'String', "ApiKey", apikeyProperties['My_App_ApiKey']
             resValue 'string', "api_key", apikeyProperties['My_App_ApiKey']
+
+            buildConfigField 'String', "email", apikeyProperties['My_email']
+            resValue 'string', "email", apikeyProperties['My_email']
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField 'String', "ApiKey", apikeyProperties['My_App_ApiKey']
             resValue 'string', "api_key", apikeyProperties['My_App_ApiKey']
+
+            buildConfigField 'String', "email", apikeyProperties['My_email']
+            resValue 'string', "email", apikeyProperties['My_email']
         }
     }
     compileOptions {

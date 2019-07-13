@@ -9,9 +9,13 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.vadimfedchuk1994gmail.weather.R;
+import com.vadimfedchuk1994gmail.weather.tools.Const;
 
 import androidx.appcompat.app.ActionBar;
 
@@ -64,12 +68,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             body = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
             body = "\n\n-----------------------------\nPlease don't remove this information\n Device OS: Android \n Device OS version: " +
                     Build.VERSION.RELEASE + "\n App Version: " + body + "\n Device Brand: " + Build.BRAND +
-                    "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER;
+                    "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER +
+                    "\n Size display: " + getScreenResolution(context);
         } catch (PackageManager.NameNotFoundException e) {
         }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"vadik.fedchuk@gmail.com"});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Const.EMAIL});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
@@ -78,7 +83,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static void contactWithDeveloper(Context context) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"vadik.fedchuk@gmail.com"});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Const.EMAIL});
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
     }
 
@@ -127,5 +132,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_temperature_units)));
         }
+    }
+
+    private static String getScreenResolution(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        return "{ " + width + "," + height + " }";
     }
 }

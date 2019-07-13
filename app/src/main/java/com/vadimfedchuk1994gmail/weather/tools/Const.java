@@ -4,9 +4,10 @@ import com.vadimfedchuk1994gmail.weather.BuildConfig;
 
 public class Const {
 
-    public static final String LOG = "TESTTEST1";
+    public static final String LOG = "TESTTEST";
     public static final int REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final String API_KEY = BuildConfig.ApiKey;
+    public static final String EMAIL = BuildConfig.email;
     public static final String BASE_URL = "http://autocomplete.wunderground.com/aq";
 
     public static final String PREF_FIRST_START = "first_start";
