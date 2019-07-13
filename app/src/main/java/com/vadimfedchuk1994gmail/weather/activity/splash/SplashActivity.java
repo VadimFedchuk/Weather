@@ -27,13 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import static com.vadimfedchuk1994gmail.weather.tools.Const.REQUEST_ACCESS_FINE_LOCATION;
+
 public class SplashActivity extends AppCompatActivity {
 
     private DilatingDotsProgressBar mDilatingDotsProgressBar;
     private SplashPresenter presenter;
-    GoogleApiClient mClient;
-    ConnectionChangeReceiver mConnectionChangeReceiver;
-    public static int REQUEST_ACCESS_FINE_LOCATION = 1;
+    private GoogleApiClient mClient;
+    private ConnectionChangeReceiver mConnectionChangeReceiver;
     private AppDatabase database;
 
     @Override

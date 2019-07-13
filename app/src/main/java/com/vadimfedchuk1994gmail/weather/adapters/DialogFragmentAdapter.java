@@ -33,7 +33,7 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
     public void onBindViewHolder(ViewHolder holder, int position){
 
         String city = mDataSet.get(position);
-        holder.bind(city, mContext);
+        holder.bind(city);
         if(position == isSelected) {
             holder.mCardView.setCardBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
             holder.mTextViewLabel.setTextColor(mContext.getResources().getColor(android.R.color.white));
@@ -83,7 +83,7 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
         @BindView(R.id.image_location)
         ImageView imageLocation;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
             mCardView.setOnClickListener(this);
@@ -95,7 +95,7 @@ public class DialogFragmentAdapter  extends RecyclerView.Adapter<DialogFragmentA
             sClickListener.onItemClickListener(getAdapterPosition(), v);
         }
 
-        private void bind(String city, Context mContext) {
+        private void bind(String city) {
 
             mTextViewLabel.setText(city);
         }

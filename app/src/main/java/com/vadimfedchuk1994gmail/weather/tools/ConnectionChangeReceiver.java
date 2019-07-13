@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 
 public class ConnectionChangeReceiver extends BroadcastReceiver {
     private onConnectionChangeCallback mOnConnectionChangeCallback;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -15,7 +16,9 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
         NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
         if (activeNetInfo != null && activeNetInfo.isConnectedOrConnecting()) {
             WeatherPreferences.setStoredConnectionChanged(context, true);
-            mOnConnectionChangeCallback.onConnectionChanged(true);
+            if (mOnConnectionChangeCallback != null) {
+                mOnConnectionChangeCallback.onConnectionChanged(true);
+            }
         } else {
             WeatherPreferences.setStoredConnectionChanged(context, false);
         }

@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
+def apikeyPropertiesFile = rootProject.file("apiKey")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -21,14 +25,14 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField 'String', "ApiKey", My_App_ApiKey
-            resValue 'string', "api_key", My_App_ApiKey
+            buildConfigField 'String', "ApiKey", apikeyProperties['My_App_ApiKey']
+            resValue 'string', "api_key", apikeyProperties['My_App_ApiKey']
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', "ApiKey", My_App_ApiKey
-            resValue 'string', "api_key", My_App_ApiKey
+            buildConfigField 'String', "ApiKey", apikeyProperties['My_App_ApiKey']
+            resValue 'string', "api_key", apikeyProperties['My_App_ApiKey']
         }
     }
     compileOptions {

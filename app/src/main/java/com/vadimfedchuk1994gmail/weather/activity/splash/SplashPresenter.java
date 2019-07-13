@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -13,7 +12,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.vadimfedchuk1994gmail.weather.activity.main.MainActivity;
-import com.vadimfedchuk1994gmail.weather.tools.Const;
 import com.vadimfedchuk1994gmail.weather.tools.WeatherPreferences;
 
 import java.io.IOException;
@@ -47,14 +45,11 @@ public class SplashPresenter implements SplashModel.OnCompleteCallback {
     public void viewIsReady() {
         mActivity.showProgressBar();
         if (WeatherPreferences.isFirstStart(mContext) && WeatherPreferences.getStoredConnectionChanged(mContext)) {
-            Log.i(Const.LOG, "1 SplashPresenter viewIsReady");
             WeatherPreferences.setStoredStart(mContext, false);
             checkCurrentLocation();
         } else if (WeatherPreferences.getStoredConnectionChanged(mContext)) {
-            Log.i(Const.LOG, "2 SplashPresenter viewIsReady");
             model.updateData();
         } else {
-            Log.i(Const.LOG, "3 SplashPresenter viewIsReady");
             mActivity.startActivity(MainActivity.TypeStart.NO_UPDATE);
         }
     }

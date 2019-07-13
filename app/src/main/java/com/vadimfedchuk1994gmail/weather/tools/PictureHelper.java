@@ -82,7 +82,7 @@ public class PictureHelper {
     public static TypeWeather generateObject(Context mContext, int type) {
         TypeWeather obj;
         String description;
-        int resourceIdIcon = 0;
+        int resourceIdIcon;
         switch (type) {
             case Const.ImageConst.TYPE_VIEW_CLEAR:
                 description = mContext.getString(R.string.clear_weather);

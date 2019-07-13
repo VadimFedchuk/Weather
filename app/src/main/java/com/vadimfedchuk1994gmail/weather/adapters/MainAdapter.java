@@ -28,7 +28,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private Context mContext;
     private ClickListener clicklistener;
     private List<Weather> mDataSet;
-    private boolean isUnitCelsius = true;
+    private boolean isUnitCelsius;
 
     public MainAdapter(Context context, List<Weather> dataSet, boolean unit) {
         mContext = context;
@@ -56,7 +56,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     }
 
     public void setList(List<Weather> dataSet) {
-        dataSet.size();
         mDataSet.clear();
         mDataSet.addAll(dataSet);
         notifyDataSetChanged();
@@ -115,7 +114,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         @BindView(R.id.text_wind)
         TextView mWindTextView;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(v -> clicklistener.onClick(mDataSet.get(getAdapterPosition()).getName()));
@@ -132,16 +131,15 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             mIconImageView.setImageResource(obj.getResourceIdIcon());
             mDescriptionTextView.setText(obj.getDescription());
             mCurrentTemperatureTextView.setText(isUnitCelsius ?
-                    mContext.getResources().getString(R.string.current_temperature, (int) data.getTemperature()) :
-                    convertCelsiusToFahrenheit(data.getTemperature()));
+                    mContext.getResources().getString(R.string.current_temperature_celsius, data.getTemperature()) :
+                    mContext.getResources().getString(R.string.current_temperature_fahrenheit, convertCelsiusToFahrenheit(data.getTemperature())));
             mMaxMinTemperatureTextView.setText(isUnitCelsius ?
-                    mContext.getResources().getString(R.string.max_min_temperature, (int) data.getMax_temp() + "\u00B0c", (int) data.getMin_temp() + "\u00B0c") :
-                    mContext.getResources().getString(R.string.max_min_temperature, convertCelsiusToFahrenheit(data.getMax_temp()), convertCelsiusToFahrenheit(data.getMin_temp())));
-            mPrecipitationTextView.setText(mContext.getResources().getString(R.string.precipitation, (int) data.getPop()));
-            mSunriseTextView.setText(convertTimeStampToDate(data.getSunrise()));
-            mSunsetTextView.setText(convertTimeStampToDate(data.getSunset()));
+                    mContext.getResources().getString(R.string.max_min_temperature_celsius, data.getMax_temp(), data.getMin_temp()) :
+                    mContext.getResources().getString(R.string.max_min_temperature_fahrenheit, convertCelsiusToFahrenheit(data.getMax_temp()), convertCelsiusToFahrenheit(data.getMin_temp())));
+            mPrecipitationTextView.setText(mContext.getResources().getString(R.string.precipitation, data.getPop()));
+            mSunriseTextView.setText(convertTimeStampToDate(data.getSunrise(), mContext));
+            mSunsetTextView.setText(convertTimeStampToDate(data.getSunset(), mContext));
             mWindTextView.setText(mContext.getResources().getString(R.string.wind_condition, data.getWind_dir(), data.getWind_speed()));
         }
     }
-
 }

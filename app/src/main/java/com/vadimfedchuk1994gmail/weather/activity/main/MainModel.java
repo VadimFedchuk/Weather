@@ -9,7 +9,10 @@ import com.vadimfedchuk1994gmail.weather.network.weather_response.WeatherRespons
 import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 import com.vadimfedchuk1994gmail.weather.tools.Const;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -18,6 +21,7 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -92,6 +96,8 @@ public class MainModel {
     }
 
     public void readData() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
         List<Weather> list = new ArrayList<>();
         mCompositeDisposable.add(mDatabase.getWeatherDao().getAllData()
                 .subscribeOn(Schedulers.io())
@@ -102,11 +108,16 @@ public class MainModel {
                         return Observable.fromIterable(weathers);
                     }
                 })
+                .filter(new Predicate<Weather>() {
+                    @Override
+                    public boolean test(Weather weather) throws Exception {
+                        return dateFormat.format(date).equals(weather.getDate());
+                    }
+                })
                 .distinct()
                 .subscribeWith(new DisposableObserver<Weather>() {
                     @Override
                     public void onNext(Weather weather) {
-                        Log.i(Const.LOG, weather.getName() + " weather name");
                         list.add(weather);
                         callback.onCompleteRead(list);
                     }

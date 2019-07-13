@@ -21,20 +21,28 @@ import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
 import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 import com.vadimfedchuk1994gmail.weather.tools.Const;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class DetailActivity extends AppCompatActivity {
 
     SharedPreferences sp;
-    private Disposable mDisposable;
+    private CompositeDisposable mDisposable = new CompositeDisposable();
     private AppDatabase mAppDatabase;
     private ViewPager mViewPager;
     private CardPagerAdapter mCardAdapter;
@@ -55,7 +63,6 @@ public class DetailActivity extends AppCompatActivity {
         mAppDatabase = WeatherApp.instance.getDatabase();
         setTitle("");
         initBars();
-        //readData();
         sp = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
@@ -63,7 +70,6 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mTextViewToolbar = toolbar.findViewById(R.id.toolbar_title);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
         FloatingActionButton myFab = findViewById(R.id.fab);
         myFab.setColorFilter(Color.WHITE);
@@ -82,25 +88,42 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void readData() {
+        List<Weather> weathers = new ArrayList<>();
+        Date date = new Date();
         mAppDatabase.getWeatherDao().getAllDatabyCity(city)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Function<List<Weather>, ObservableSource<Weather>>() {
+                    @Override
+                    public ObservableSource<Weather> apply(List<Weather> weathers) throws Exception {
+                        return Observable.fromIterable(weathers);
+                    }
+                })
+                .filter(new Predicate<Weather>() {
+                    @Override
+                    public boolean test(Weather weather) throws Exception {
+                        Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(weather.getDate());
+                        Log.i(Const.LOG, "weathers.size " + date1.after(date));
+                        return date1.after(date);
+                    }
+                })
+                .toList()
                 .subscribe(new SingleObserver<List<Weather>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mDisposable = d;
+                        mDisposable.add(d);
                     }
 
                     @Override
                     public void onSuccess(List<Weather> weathers) {
+                        Log.i(Const.LOG, "weathers.size " + weathers.size());
                         initialAdapter(weathers);
-                        weathers.remove(0);
                         mTextViewToolbar.setText(weathers.get(0).getName());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(Const.LOG, "detail error " + e.getMessage());
+                        Log.i(Const.LOG, "error detail " + e.getMessage());
                     }
                 });
     }

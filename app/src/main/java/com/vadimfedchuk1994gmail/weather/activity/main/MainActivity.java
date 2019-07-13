@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -34,7 +35,6 @@ import java.util.List;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -62,7 +62,7 @@ public class MainActivity extends BaseActivity implements
     SharedPreferences sp;
     private List<Weather> data = new ArrayList<>();
     private boolean isUnitCelsius = true;
-    private ContentLoadingProgressBar mProgressBar;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,14 +174,12 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void showProgressBar() {
-        layoutEmpty.setVisibility(View.VISIBLE);
-        mProgressBar.show();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
-        mProgressBar.hide();
 
     }
 

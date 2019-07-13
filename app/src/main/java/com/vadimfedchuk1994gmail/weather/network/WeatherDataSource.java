@@ -2,25 +2,24 @@ package com.vadimfedchuk1994gmail.weather.network;
 
 import android.content.Context;
 
-import com.vadimfedchuk1994gmail.weather.BuildConfig;
-import com.vadimfedchuk1994gmail.weather.R;
 import com.vadimfedchuk1994gmail.weather.network.cities_response.CityResponse;
 import com.vadimfedchuk1994gmail.weather.network.weather_response.WeatherResponse;
 import com.vadimfedchuk1994gmail.weather.tools.WeatherPreferences;
 
 import io.reactivex.Single;
 
+import static com.vadimfedchuk1994gmail.weather.tools.Const.API_KEY;
+import static com.vadimfedchuk1994gmail.weather.tools.Const.BASE_URL;
+
 public class WeatherDataSource {
-    private final String API_KEY = BuildConfig.ApiKey;
-    private Context mContext;
+
     private ApiService mApiService;
     private String language;
 
     public WeatherDataSource(Context context) {
-        mContext = context;
-        mApiService = ApiClient.getClient(mContext)
+        mApiService = ApiClient.getClient(context)
                 .create(ApiService.class);
-        language = WeatherPreferences.getStoredLanguage(mContext);
+        language = WeatherPreferences.getStoredLanguage(context);
     }
 
     public Single<WeatherResponse> getWeatherData(String city) {
@@ -28,6 +27,6 @@ public class WeatherDataSource {
     }
 
     public Single<CityResponse> getCities(String query) {
-        return mApiService.getCities(mContext.getString(R.string.base_url_upload_cities_list), query, language);
+        return mApiService.getCities(BASE_URL, query, language);
     }
 }

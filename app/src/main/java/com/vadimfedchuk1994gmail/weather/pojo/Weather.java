@@ -70,7 +70,6 @@ public class Weather {
 
     @Ignore
     public Weather(String date, String description, String icon, double temperature, double max_temp, double min_temp, long pop, double pres, long sunrise, long sunset, String wind_dir, double wind_speed) {
-        this.id = id;
         this.date = date;
         this.description = description;
         this.icon = icon;
@@ -99,10 +98,6 @@ public class Weather {
             return false;
         }
 
-//		if (!(obj instanceof Weather)) {
-//            return false;
-//        }
-
         if (obj == this) {
             return true;
         }
@@ -130,95 +125,47 @@ public class Weather {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getIcon() {
         return icon;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public double getTemperature() {
         return temperature;
-    }
-
-    public void setTemperature(double temperature) {
-        this.temperature = temperature;
     }
 
     public double getMax_temp() {
         return max_temp;
     }
 
-    public void setMax_temp(double max_temp) {
-        this.max_temp = max_temp;
-    }
-
     public double getMin_temp() {
         return min_temp;
-    }
-
-    public void setMin_temp(double min_temp) {
-        this.min_temp = min_temp;
     }
 
     public long getPop() {
         return pop;
     }
 
-    public void setPop(long pop) {
-        this.pop = pop;
-    }
-
     public double getPres() {
         return pres;
-    }
-
-    public void setPres(double pres) {
-        this.pres = pres;
     }
 
     public long getSunrise() {
         return sunrise;
     }
 
-    public void setSunrise(long sunrise) {
-        this.sunrise = sunrise;
-    }
-
     public long getSunset() {
         return sunset;
-    }
-
-    public void setSunset(long sunset) {
-        this.sunset = sunset;
     }
 
     public String getWind_dir() {
         return wind_dir;
     }
 
-    public void setWind_dir(String wind_dir) {
-        this.wind_dir = wind_dir;
-    }
-
     public double getWind_speed() {
         return wind_speed;
-    }
-
-    public void setWind_speed(double wind_speed) {
-        this.wind_speed = wind_speed;
     }
 }

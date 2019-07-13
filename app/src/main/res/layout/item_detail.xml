@@ -95,12 +95,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:gravity="center"
             android:text="clear"
-            android:textSize="30sp"
+            android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
@@ -119,7 +119,7 @@
             android:drawablePadding="8dp"
             android:gravity="start"
             android:text="CB 5.4 m/c"
-            android:textSize="30sp"
+            android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_description"/>
@@ -138,7 +138,7 @@
             android:drawablePadding="8dp"
             android:gravity="start"
             android:text="80%"
-            android:textSize="30sp"
+            android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_wind_direction"/>
@@ -157,7 +157,7 @@
             android:drawablePadding="8dp"
             android:gravity="start"
             android:text="900"
-            android:textSize="30sp"
+            android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_precipitation"/>
@@ -171,6 +171,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:gravity="center"
+            android:layout_gravity="bottom"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -180,7 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="50dp"
@@ -203,7 +204,7 @@
                 android:layout_marginStart="36dp"
                 android:layout_marginLeft="36dp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="50dp"
@@ -219,7 +220,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-
                     android:layout_marginLeft="4dp"
                     tools:text="20:00"/>
             </LinearLayout>

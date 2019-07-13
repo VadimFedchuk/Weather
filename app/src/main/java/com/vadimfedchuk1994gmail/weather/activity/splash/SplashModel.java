@@ -38,7 +38,6 @@ public class SplashModel {
     }
 
     public void loadData(String city) {
-        Log.i("TESTTEST", "loadData " + city);
         Single<WeatherResponse> weatherResponseObservable = getLoadObservable(city);
         mCompositeDisposable.add(weatherResponseObservable
                 .subscribeOn(Schedulers.io())
@@ -46,8 +45,6 @@ public class SplashModel {
                 .subscribeWith(new DisposableSingleObserver<WeatherResponse>() {
                     @Override
                     public void onSuccess(WeatherResponse weatherResponse) {
-                        Log.i(Const.LOG, "loadData " + weatherResponse.getCityName());
-                        Log.i(Const.LOG, "loadData " + weatherResponse.getData().size());
                         if (weatherResponse.getData().isEmpty()) {
                             if (countFlag == countCitiesForUpdate) {
                                 callback.onComplete(false);
@@ -59,7 +56,6 @@ public class SplashModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(Const.LOG, "loadData " + "onError " + e.getMessage());
                         callback.onComplete(false);
                     }
                 }));
@@ -70,22 +66,16 @@ public class SplashModel {
         mCompositeDisposable.add(mAppDatabase.getWeatherDao().getCities()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(new Function<List<String>, ObservableSource<String>>() {
-                    @Override
-                    public ObservableSource<String> apply(List<String> cities) throws Exception {
-                        if (cities.isEmpty()) {
-                            callback.onComplete(false);
-                        }
-                        return Observable.fromIterable(cities);
+                .flatMap((Function<List<String>, ObservableSource<String>>) cities -> {
+                    if (cities.isEmpty()) {
+                        callback.onComplete(false);
                     }
+                    return Observable.fromIterable(cities);
                 })
                 .distinct()
-                .flatMap(new Function<String, ObservableSource<WeatherResponse>>() {
-                    @Override
-                    public ObservableSource<WeatherResponse> apply(String s) throws Exception {
-                        ++countCitiesForUpdate;
-                        return getLoadObservable(s).toObservable();
-                    }
+                .flatMap((Function<String, ObservableSource<WeatherResponse>>) s -> {
+                    ++countCitiesForUpdate;
+                    return getLoadObservable(s).toObservable();
                 }).subscribeWith(new DisposableObserver<WeatherResponse>() {
                     @Override
                     public void onNext(WeatherResponse weatherResponse) {
@@ -101,12 +91,13 @@ public class SplashModel {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        if (countFlag == countCitiesForUpdate) {
+                            callback.onComplete(false);
+                        }
                     }
 
                     @Override
                     public void onComplete() {
-
                     }
                 })
         );
@@ -145,7 +136,6 @@ public class SplashModel {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        Log.i(Const.LOG, "onComplete InsertData " + countFlag + " " + countCitiesForUpdate);
                         if (countFlag == countCitiesForUpdate) {
                             callback.onComplete(true);
                         }
@@ -153,7 +143,6 @@ public class SplashModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(Const.LOG, "updateOrInsertData " + e.getMessage());
                         if (countFlag == countCitiesForUpdate) {
                             callback.onComplete(false);
                         }

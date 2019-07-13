@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vadimfedchuk1994gmail.weather.activity.main.OnEditTextChangedListener;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +44,7 @@ public class SearchCityDialogFragment extends DialogFragment
     private List<String> cities = new ArrayList<>();
     private int selectedItem = 0;
     @BindView(R.id.progressBarFragment)
-    ContentLoadingProgressBar mContentLoadingProgressBar;
+    ProgressBar mProgressBar;
     @BindView(R.id.empty_view_layout_fragment)
     LinearLayout emptyLayout;
     private String query;
@@ -77,8 +77,8 @@ public class SearchCityDialogFragment extends DialogFragment
         if (list.isEmpty()) {
             emptyLayout.setVisibility(View.VISIBLE);
         }
-        mContentLoadingProgressBar.setVisibility(View.GONE);
-        mContentLoadingProgressBar.hide();
+        emptyLayout.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
         cities.clear();
         cities.addAll(list);
         adapter.setList(cities);
@@ -86,7 +86,9 @@ public class SearchCityDialogFragment extends DialogFragment
 
     @Override
     public void onConnectionChanged(boolean isConnected) {
-        mListener.onEditTextChanged(query, (SearchCityDialogFragment.this::onCompleteLoad));
+        if (isConnected && query.length() > 2 && cities.isEmpty()) {
+            mListener.onEditTextChanged(query, (SearchCityDialogFragment.this::onCompleteLoad));
+        }
     }
 
     public interface AddCityDialogListener {
@@ -142,8 +144,7 @@ public class SearchCityDialogFragment extends DialogFragment
 
             @Override
             public void afterTextChanged(Editable s) {
-                mContentLoadingProgressBar.setVisibility(View.VISIBLE);
-                mContentLoadingProgressBar.show();
+                mProgressBar.setVisibility(View.VISIBLE);
                 if (s.length() > 2) {
                     query = s.toString().substring(0, 1).toUpperCase() + s.toString().substring(1);
                     mListener.onEditTextChanged(query, (SearchCityDialogFragment.this::onCompleteLoad));

@@ -24,7 +24,7 @@
         android:digits="qwertyuiopasdfghjklzxcvbnm-"
         app:met_floatingLabelText="Custom Floating Label Text"/>
 
-    <androidx.core.widget.ContentLoadingProgressBar
+    <ProgressBar
         android:id="@+id/progressBarFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

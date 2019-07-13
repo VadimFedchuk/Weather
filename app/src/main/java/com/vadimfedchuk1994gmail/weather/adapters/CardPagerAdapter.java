@@ -24,12 +24,9 @@ import static com.vadimfedchuk1994gmail.weather.tools.ConverterHelper.convertToD
 
 public class CardPagerAdapter extends PagerAdapter {
 
-    private LayoutInflater layoutInflater;
     private List<Weather> mData;
     private Context mContext;
-    private boolean isUnitCelsius = true;
-    private TextView maxminTempTextView;
-    private TextView temperatureTextView;
+    private boolean isUnitCelsius;
 
     public CardPagerAdapter(Context context, List<Weather> data, boolean unit) {
         mData = data;
@@ -49,7 +46,7 @@ public class CardPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view = layoutInflater.inflate(R.layout.item_detail, container, false);
         container.addView(view);
@@ -65,8 +62,8 @@ public class CardPagerAdapter extends PagerAdapter {
 
     private void bind(Weather item, View view) {
         TypeWeather obj = PictureHelper.generateObject(mContext, PictureHelper.choosePicture(item.getIcon()));
-        temperatureTextView = view.findViewById(R.id.text_temperature);
-        maxminTempTextView = view.findViewById(R.id.text_max_min_temperature_detail);
+        TextView temperatureTextView = view.findViewById(R.id.text_temperature);
+        TextView maxminTempTextView = view.findViewById(R.id.text_max_min_temperature_detail);
 
         TextView dateTextView = view.findViewById(R.id.text_date);
         ImageView iconView = view.findViewById(R.id.icon_image);
@@ -79,22 +76,20 @@ public class CardPagerAdapter extends PagerAdapter {
 
         Resources resources = mContext.getResources();
 
-        dateTextView.setText(item.getDate());
-        convertToDate(item.getDate());
+        dateTextView.setText(convertToDate(item.getDate(), mContext));
         iconView.setImageResource(obj.getResourceIdIcon());
         temperatureTextView.setText(isUnitCelsius ?
-                mContext.getResources().getString(R.string.current_temperature, (int) item.getTemperature()) :
-                convertCelsiusToFahrenheit(item.getTemperature()));
+                mContext.getResources().getString(R.string.current_temperature_celsius, item.getTemperature()) :
+                mContext.getResources().getString(R.string.current_temperature_fahrenheit, convertCelsiusToFahrenheit(item.getTemperature())));
         maxminTempTextView.setText(isUnitCelsius ?
-                mContext.getResources().getString(R.string.max_min_temperature_2, (int) item.getMax_temp() + "\u00B0c", (int) item.getMin_temp() + "\u00B0c") :
-                mContext.getResources().getString(R.string.max_min_temperature_2, convertCelsiusToFahrenheit(item.getMax_temp()), convertCelsiusToFahrenheit(item.getMin_temp())));
+                mContext.getResources().getString(R.string.max_min_temperature_2_celsius, item.getMax_temp(), item.getMin_temp()) :
+                mContext.getResources().getString(R.string.max_min_temperature_2_fahrenheit, convertCelsiusToFahrenheit(item.getMax_temp()), convertCelsiusToFahrenheit(item.getMin_temp())));
         descriptionTextView.setText(obj.getDescription());
-        text_wind_directionTextView.setText(resources.getString(R.string.wind_speed_direction,
-                item.getWind_dir(), (int) item.getWind_speed()));
-        precipitationTextView.setText(mContext.getResources().getString(R.string.precipitation_detail, (int) (item.getPop())));
+        text_wind_directionTextView.setText(resources.getString(R.string.wind_speed_direction_detail,
+                item.getWind_dir(), item.getWind_speed()));
+        precipitationTextView.setText(mContext.getResources().getString(R.string.precipitation_detail, item.getPop()));
         pressureTextView.setText(mContext.getResources().getString(R.string.pressure_detail, convertMbToMm(item.getPres())));
-
-        sunriseTextView.setText(convertTimeStampToDate(item.getSunrise()));
-        sunsetTextView.setText(convertTimeStampToDate(item.getSunset()));
+        sunriseTextView.setText(convertTimeStampToDate(item.getSunrise(), mContext));
+        sunsetTextView.setText(convertTimeStampToDate(item.getSunset(), mContext));
     }
 }

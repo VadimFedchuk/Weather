@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Weather</string>
-    <string name="current_temperature">%1$d\u00B0c</string>
+    <string name="current_temperature_celsius">%1$.0f\u00B0c</string>
+    <string name="current_temperature_fahrenheit">%1$.0f\u00B0F</string>
     <string name="max_min_temperature">%1$s \n%2$s</string>
-    <string name="max_min_temperature_2">%1$s | %2$s</string>
+    <string name="max_min_temperature_celsius">%1$.0f°c \n%2$.0f°c</string>
+    <string name="max_min_temperature_fahrenheit">%1$.0f°F \n%2$.0f°F</string>
+    <string name="max_min_temperature_2_celsius">%1$.0f°c | %2$.0f°c</string>
+    <string name="max_min_temperature_2_fahrenheit">%1$.0f°F | %2$.0f°F</string>
     <string name="wind_speed_direction">%1$s\n%2$d м\с</string>
+    <string name="wind_speed_direction_detail">%1$s, %2$.0f м\с</string>
     <string name="wind_speed">%1$s %2$d м\с</string>
     <string name="base_url_upload_data_weather">https://api.weatherbit.io/v2.0/</string>
     <string name="base_url_upload_cities_list">http://autocomplete.wunderground.com/aq</string>
@@ -40,10 +45,12 @@
     <string name="choose_email_client">Choose email client</string>
     <string name="precipitation_detail">Вер. ос. %1$d %%</string>
     <string name="precipitation">%1$d %%</string>
-    <string name="pressure_detail">Давление: %1$d мм </string>
+    <string name="pressure_detail">Давление: %1$.1f мм </string>
     <string name="wind_condition">%1$s\n%2$.1f m/s</string>
 
     <string name="maxmin_title">max\n   \\min</string>
+    <string name="title_splash_load">Пожалуйста подождите.\n  Идет загрузка...</string>
+    <string name="title_splash">Погода любой точки мира</string>
 
 
 </resources>

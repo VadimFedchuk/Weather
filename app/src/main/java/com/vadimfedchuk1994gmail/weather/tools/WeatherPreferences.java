@@ -3,11 +3,12 @@ package com.vadimfedchuk1994gmail.weather.tools;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import static com.vadimfedchuk1994gmail.weather.tools.Const.PREF_CONNECTION_CHANGED;
+import static com.vadimfedchuk1994gmail.weather.tools.Const.PREF_FIRST_START;
+import static com.vadimfedchuk1994gmail.weather.tools.Const.PREF_LANGUAGE;
+
 public class WeatherPreferences {
 
-    private static final String PREF_FIRST_START = "first_start";
-    private static final String PREF_CONNECTION_CHANGED = "connection_changed";
-    private static final String PREF_LANGUAGE = "current_language";
 
     public static Boolean isFirstStart(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
