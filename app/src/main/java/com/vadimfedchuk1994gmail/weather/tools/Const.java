@@ -6,7 +6,7 @@ public class Const {
 
     public static final String LOG = "TESTTEST";
     public static final int REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final String API_KEY = BuildConfig.ApiKey;
+    public static final String API_KEY = "949be0a14dbd4822b5914682ad02358e"; //BuildConfig.ApiKey;
     public static final String EMAIL = BuildConfig.email;
     public static final String BASE_URL = "http://autocomplete.wunderground.com/aq";
 

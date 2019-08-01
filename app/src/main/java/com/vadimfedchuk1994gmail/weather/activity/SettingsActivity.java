@@ -75,7 +75,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{Const.EMAIL});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Query from Weather app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
     }

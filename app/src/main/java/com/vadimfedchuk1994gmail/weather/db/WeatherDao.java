@@ -9,6 +9,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 @Dao
 public interface WeatherDao {
@@ -20,10 +21,13 @@ public interface WeatherDao {
     Observable<List<Weather>> getAllData();
 
     @Query("SELECT * FROM Weather WHERE name = :name")
-    Observable<List<Weather>> getAllDatabyCity(String name);
+    Single<List<Weather>> getAllDataByCity(String name);
 
     @Query("SELECT name FROM Weather")
     Observable<List<String>> getCities();
+
+    @Query("SELECT name FROM Weather")
+    Single<List<String>> getCity();
 
     @Query("DELETE FROM Weather WHERE name = :name")
     Completable deleteDataByName(String name);

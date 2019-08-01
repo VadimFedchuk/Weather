@@ -36,6 +36,8 @@ public class MainModel {
     private WeatherDataSource mWeatherDataSource;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
+    private int countCity;
+
     public MainModel(AppDatabase database, WeatherDataSource weatherDataSource) {
         mDatabase = database;
         mWeatherDataSource = weatherDataSource;
@@ -174,6 +176,13 @@ public class MainModel {
                         Log.i(Const.LOG, e.getMessage() + " loadCities");
                     }
                 }));
+    }
+
+
+    private Single<List<Weather>> readFromDbBySity(String city) {
+        return mDatabase.getWeatherDao().getAllDataByCity(city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     interface OnCompleteReadCallback {

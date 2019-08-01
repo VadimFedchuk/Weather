@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -18,6 +19,7 @@ import com.vadimfedchuk1994gmail.weather.activity.main.MainActivity;
 import com.vadimfedchuk1994gmail.weather.db.AppDatabase;
 import com.vadimfedchuk1994gmail.weather.network.WeatherDataSource;
 import com.vadimfedchuk1994gmail.weather.tools.ConnectionChangeReceiver;
+import com.vadimfedchuk1994gmail.weather.tools.Const;
 import com.vadimfedchuk1994gmail.weather.tools.WeatherPreferences;
 import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
@@ -41,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        getWindow().setBackgroundDrawable(null);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
@@ -124,6 +127,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void startActivity(MainActivity.TypeStart type) {
+        Log.i(Const.LOG, "start");
         hideProgressBar();
         startActivity(new Intent(getApplicationContext(), MainActivity.class)
                 .putExtra("type", type)

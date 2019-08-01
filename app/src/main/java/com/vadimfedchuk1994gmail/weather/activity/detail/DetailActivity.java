@@ -31,12 +31,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class DetailActivity extends AppCompatActivity {
@@ -90,9 +89,10 @@ public class DetailActivity extends AppCompatActivity {
     public void readData() {
         List<Weather> weathers = new ArrayList<>();
         Date date = new Date();
-        mAppDatabase.getWeatherDao().getAllDatabyCity(city)
+        mAppDatabase.getWeatherDao().getAllDataByCity(city)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .toObservable()
                 .flatMap(new Function<List<Weather>, ObservableSource<Weather>>() {
                     @Override
                     public ObservableSource<Weather> apply(List<Weather> weathers) throws Exception {
@@ -103,17 +103,11 @@ public class DetailActivity extends AppCompatActivity {
                     @Override
                     public boolean test(Weather weather) throws Exception {
                         Date date1 = new SimpleDateFormat("yyyy-MM-dd").parse(weather.getDate());
-                        Log.i(Const.LOG, "weathers.size " + date1.after(date));
                         return date1.after(date);
                     }
                 })
                 .toList()
-                .subscribe(new SingleObserver<List<Weather>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        mDisposable.add(d);
-                    }
-
+                .subscribe(new DisposableSingleObserver<List<Weather>>() {
                     @Override
                     public void onSuccess(List<Weather> weathers) {
                         Log.i(Const.LOG, "weathers.size " + weathers.size());
@@ -123,9 +117,10 @@ public class DetailActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(Const.LOG, "error detail " + e.getMessage());
+                        Log.i(Const.LOG, "error " + e.getMessage());
                     }
                 });
+
     }
 
     private void initialAdapter(List<Weather> weathers) {

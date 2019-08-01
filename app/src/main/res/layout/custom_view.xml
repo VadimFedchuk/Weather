@@ -8,9 +8,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:cardBackgroundColor="#ffffff"
     card_view:cardCornerRadius="20dp"
     card_view:cardElevation="2dp"
+    android:elevation="4dp"
     android:background="@drawable/rounded_corner_layout_blue"
     card_view:cardMaxElevation="4dp">
 

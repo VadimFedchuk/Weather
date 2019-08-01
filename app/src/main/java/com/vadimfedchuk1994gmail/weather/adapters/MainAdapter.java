@@ -1,6 +1,7 @@
 package com.vadimfedchuk1994gmail.weather.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
             mNameTextView.setText(data.getName());
             mIconImageView.setImageResource(obj.getResourceIdIcon());
+            mIconImageView.setBackgroundColor(Color.TRANSPARENT);
             mDescriptionTextView.setText(obj.getDescription());
             mCurrentTemperatureTextView.setText(isUnitCelsius ?
                     mContext.getResources().getString(R.string.current_temperature_celsius, data.getTemperature()) :
