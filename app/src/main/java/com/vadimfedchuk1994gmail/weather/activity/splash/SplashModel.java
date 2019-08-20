@@ -9,15 +9,18 @@ import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 import com.vadimfedchuk1994gmail.weather.tools.Const;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -27,8 +30,6 @@ public class SplashModel {
     private WeatherDataSource mWeatherDataSource;
     private OnCompleteCallback callback;
     private AppDatabase mAppDatabase;
-    private int countFlag = 0;
-    private int countCitiesForUpdate = 1;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public SplashModel(WeatherDataSource weatherDataSource, AppDatabase database) {
@@ -38,116 +39,134 @@ public class SplashModel {
     }
 
     public void loadData(String city) {
+        Log.i(Const.LOG, "loadData splash model " + city);
         Single<WeatherResponse> weatherResponseObservable = getLoadObservable(city);
         mCompositeDisposable.add(weatherResponseObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<WeatherResponse>() {
+                .toObservable()
+                .toList()
+                .flatMapCompletable(new Function<List<WeatherResponse>, CompletableSource>() {
                     @Override
-                    public void onSuccess(WeatherResponse weatherResponse) {
-                        if (weatherResponse.getData().isEmpty()) {
-                            if (countFlag == countCitiesForUpdate) {
-                                callback.onComplete(false);
-                            }
-                        } else {
-                            updateOrInsertData(weatherResponse);
-                        }
+                    public CompletableSource apply(List<WeatherResponse> weatherResponses) throws Exception {
+                        return insertData(weatherResponses);
+                    }
+                })
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i(Const.LOG, "onComplete()");
+                        callback.onComplete(true);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.i(Const.LOG, "onError() " + e.getMessage());
                         callback.onComplete(false);
                     }
                 }));
     }
 
     public void updateData() {
-        countCitiesForUpdate = 0;
-        mCompositeDisposable.add(mAppDatabase.getWeatherDao().getCities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap((Function<List<String>, ObservableSource<String>>) cities -> {
-                    if (cities.isEmpty()) {
-                        callback.onComplete(false);
+        mCompositeDisposable.add(getCities().toObservable()
+                .flatMap(new Function<List<String>, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(List<String> strings) throws Exception {
+                        Log.i(Const.LOG, "city size" + strings.size());
+                        return Observable.fromIterable(strings);
                     }
-                    return Observable.fromIterable(cities);
                 })
                 .distinct()
-                .flatMap((Function<String, ObservableSource<WeatherResponse>>) s -> {
-                    ++countCitiesForUpdate;
-                    return getLoadObservable(s).toObservable();
-                }).subscribeWith(new DisposableObserver<WeatherResponse>() {
+                .flatMap(new Function<String, ObservableSource<WeatherResponse>>() {
                     @Override
-                    public void onNext(WeatherResponse weatherResponse) {
-                        if (weatherResponse != null) {
-                            getDeleteObservable(weatherResponse.getCityName());
-                            updateOrInsertData(weatherResponse);
-                        } else {
-                            if (countFlag == countCitiesForUpdate) {
-                                callback.onComplete(false);
-                            }
-                        }
+                    public ObservableSource<WeatherResponse> apply(String city) throws Exception {
+                        Log.i(Const.LOG, "city " + city);
+                        return getLoadObservable(city).toObservable();
+                    }
+                })
+                .toList()
+                .flatMapCompletable(new Function<List<WeatherResponse>, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(List<WeatherResponse> weatherResponses) throws Exception {
+                        Log.i(Const.LOG, "apply " + weatherResponses.size());
+                        deleteData();
+                        return insertData(weatherResponses);
+                    }
+                })
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.i(Const.LOG, "onComplete()");
+                        callback.onComplete(true);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (countFlag == countCitiesForUpdate) {
-                            callback.onComplete(false);
-                        }
+                        Log.i(Const.LOG, "onError() " + e.getMessage());
+                        callback.onComplete(false);
                     }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                })
-        );
+                }));
     }
 
     private Single<WeatherResponse> getLoadObservable(String city) {
-        ++countFlag;
         return mWeatherDataSource.getWeatherData(city)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void getDeleteObservable(String city) {
-        mCompositeDisposable.add(mAppDatabase.getWeatherDao().deleteDataByName(city)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Log.i(Const.LOG, " delete complete");
-                    }
+    private Completable insertData(List<WeatherResponse> weatherResponses) {
+        for (WeatherResponse obj : weatherResponses) {
+            Log.i(Const.LOG, "в цикле город " + obj.getCityName());
+            List<Weather> data = Weather.cloneList(obj.getData(), obj.getCityName());
+            Log.i(Const.LOG, data.size() + " data.size");
+            mAppDatabase.getWeatherDao().insert(data)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DisposableSingleObserver<List<Long>>() {
+                        @Override
+                        public void onSuccess(List<Long> list) {
+                            for (Long i : list) {
+                                Log.i(Const.LOG, "id " + i);
+                            }
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i(Const.LOG, " delete error " + e.getMessage());
-                    }
-                }));
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+                    });
+        }
+        Log.i(Const.LOG, "перед Completable.complete() ");
+        return Completable.complete();
     }
 
-    private void updateOrInsertData(WeatherResponse weatherResponse) {
-        List<Weather> data = Weather.cloneList(weatherResponse.getData(), weatherResponse.getCityName());
+    private Single<List<String>> getCities() {
+        return mAppDatabase.getWeatherDao().getCity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
-        mCompositeDisposable.add(mAppDatabase.getWeatherDao().insert(data)
+    private Completable deleteData() {
+        Log.i(Const.LOG, "deleteData ");
+        mCompositeDisposable.add(Observable.fromCallable(new CallableLongAction())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
+                .subscribe(new Consumer<Integer>() {
                     @Override
-                    public void onComplete() {
-                        if (countFlag == countCitiesForUpdate) {
-                            callback.onComplete(true);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (countFlag == countCitiesForUpdate) {
-                            callback.onComplete(false);
-                        }
+                    public void accept(Integer integer) throws Exception {
                     }
                 }));
+
+        return Completable.complete();
+    }
+
+    class CallableLongAction implements Callable<Integer> {
+
+        @Override
+        public Integer call() throws Exception {
+            List<Weather> listToDelete = mAppDatabase.getWeatherDao().getAllData();
+            return mAppDatabase.getWeatherDao().deleteAllData(listToDelete);
+        }
     }
 
     public void disposeDisposable() {
@@ -162,3 +181,4 @@ public class SplashModel {
         void onComplete(boolean isUpdatedSuccessfully);
     }
 }
+

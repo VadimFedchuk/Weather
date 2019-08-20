@@ -49,7 +49,7 @@
     <string name="wind_condition">%1$s\n%2$.1f m/s</string>
 
     <string name="maxmin_title">max\n   \\min</string>
-    <string name="title_splash_load">Пожалуйста подождите.\n  Идет загрузка...</string>
+    <string name="title_splash_load">Пожалуйста подождите.\n  Идет обновление данных...</string>
     <string name="title_splash">Погода любой точки мира</string>
 
 

@@ -12,6 +12,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,14 +42,6 @@ import com.vadimfedchuk1994gmail.weather.tools.RecyclerItemTouchHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
@@ -128,16 +129,16 @@ public class MainActivity extends BaseActivity implements
     }
 
 
-    public void showData(List<Weather> data) {
+    public void showData(ArrayList<List<Weather>> data) {
         if (data.size() > 0) {
             layoutEmpty.setVisibility(View.GONE);
             this.data.clear();
-            this.data.addAll(data);
+            //this.data.addAll(data);
         } else {
             layoutEmpty.setVisibility(View.VISIBLE);
         }
         hideProgressBar();
-        mAdapter.setList(data);
+        //mAdapter.setList(data);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.vadimfedchuk1994gmail.weather.activity.main;
 
 import com.vadimfedchuk1994gmail.weather.pojo.Weather;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainPresenter implements MainModel.OnCompleteReadCallback,
@@ -31,7 +32,8 @@ public class MainPresenter implements MainModel.OnCompleteReadCallback,
     }
 
     @Override
-    public void onCompleteRead(List<Weather> weathers) {
+    public void onCompleteRead(ArrayList<List<Weather>> weathers) {
+
         view.showData(weathers);
     }
 
